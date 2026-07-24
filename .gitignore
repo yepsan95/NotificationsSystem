@@ -1,0 +1,15 @@
+# Python compiled files
+__pycache__/
+
+# Virtual environment directories
+.venv/
+venv/
+
+# Local configuration files
+.env
+
+# Code editors and IDEs files and directories
+.vscode/
+
+# Operating system generated files
+.DS_Store
