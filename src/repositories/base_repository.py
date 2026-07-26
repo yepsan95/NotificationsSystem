@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from src.models.base_model import Base
 
 
+# Create generic types for BaseRepository class
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 
