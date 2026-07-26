@@ -1,6 +1,8 @@
+import logging
 from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from src.repositories.base_repository import BaseRepository
 from src.models.user_model import User
 from src.schemas.user_schema import UserCreate
@@ -16,7 +18,11 @@ class UserRepository(BaseRepository[User, UserCreate]):
         new_user_data = new_user.model_dump()
         new_user_data.pop("password", None)
         user = User(**new_user_data, password_hash=hashed_password)
-        self.db.add(user)
-        self.db.commit()
-        self.db.refresh(user)
-        return user
+        try:
+            self.db.add(user)
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            self._handle_exception("create", e)
