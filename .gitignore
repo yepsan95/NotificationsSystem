@@ -7,6 +7,7 @@ venv/
 
 # Local configuration files
 .env
+.env.test
 
 # Code editors and IDEs files and directories
 .vscode/
