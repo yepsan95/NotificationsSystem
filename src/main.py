@@ -7,7 +7,7 @@ from src.controllers.user_controller import router as user_router
 # This decorator converts an asynchronous function into a context manager function
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Asynchronous context manager function for initializing the application"""
+    """Asynchronous context manager function for initializing the application."""
     
     # Startup stage
     # The code here will execute only once at startup
@@ -28,5 +28,5 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Controllers connection
+# Controllers' routers connection
 app.include_router(user_router)
