@@ -49,3 +49,4 @@ class BaseDatabaseClient(ABC):
             yield db
         finally:
             db.close()
+            return "Database session generator terminated."
