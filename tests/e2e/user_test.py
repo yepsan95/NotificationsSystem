@@ -76,37 +76,46 @@ def test_http_client():
     app.dependency_overrides.clear()
 
 
-def test_get_users(test_http_client, db_session):
+@pytest.fixture
+def sample_single_user(db_session):
+    """Creates a single user before the test."""
 
-    user_first_name = "Linus"
-    user_middle_name = "Benedict"
-    user_last_name = "Torvalds"
-    user_email = "linus@linuxfoundation.org"
-    user_password  =  "ILoveTux"
+    user_data = {
+        "first_name": "Linus",
+        "middle_name": "Benedict",
+        "last_name": "Torvalds",
+        "email": "linus@linuxfoundation.org"
+    }
+    user_password = "ILoveTux"
 
     hashed_password = password_context.hash(user_password)
 
-    new_user = User(
-        first_name="Linus",
-        middle_name="Benedict",
-        last_name="Torvalds",
-        email="linus@linuxfoundation.org",
-        password_hash=hashed_password
-    )
+    new_user = User(**user_data, password_hash=hashed_password)
 
     db_session.add(new_user)
     db_session.commit()
 
-    response = test_http_client.get("/api/v1/users")
+    return user_data
 
+
+def test_get_multi_users_returns_success_status(test_http_client):
+
+    response = test_http_client.get("/api/v1/users")
     assert response.status_code == status.HTTP_200_OK
 
-    all_users_list = response.json()
 
-    assert (len(all_users_list) > 0), "API returned an empty list of users"
-    user_data = all_users_list[0]
+def test_get_multi_users_returns_one_item(test_http_client, sample_single_user):
 
-    assert user_data["first_name"] == user_first_name
-    assert user_data["middle_name"] == user_middle_name
-    assert user_data["last_name"] == user_last_name
-    assert user_data["email"] == user_email
+    response = test_http_client.get("/api/v1/users")
+    data = response.json()
+    assert (len(data) == 1)
+
+
+def test_get_multi_users_returns_valid_user_fields(test_http_client, sample_single_user):
+
+    response = test_http_client.get("/api/v1/users")
+    data = response.json()
+    assert (len(data) == 1)
+    user_data = data[0]
+
+    assert all(user_data.get(k) == v for k, v in sample_single_user.items())
