@@ -14,8 +14,8 @@ class UserService:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
-    def get_all(self) -> list[User]:
-        users = self.repo.get_all()
+    def get_multi(self, *, offset: int = 0, limit: int = 100) -> list[User]:
+        users = self.repo.get_multi(offset=offset, limit=limit)
         return users
 
     def get_by_id(self, user_id: UUID) -> User:

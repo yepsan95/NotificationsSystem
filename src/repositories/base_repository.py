@@ -44,12 +44,12 @@ class BaseRepository(Generic[ModelType, CreateSchemaType]):
         except SQLAlchemyError as e:
             self._handle_exception("get_by_id", e)
 
-    def get_all(self) -> Sequence[ModelType]:
+    def get_multi(self, *, offset: int = 0, limit: int = 100) -> Sequence[ModelType]:
         try:
-            statement = select(self.model)
+            statement = select(self.model).offset(offset).limit(limit)
             return self.db.scalars(statement).all()
         except SQLAlchemyError as e:
-            self._handle_exception("get_all", e)
+            self._handle_exception("get_multi", e)
 
     def create(self, new_obj: CreateSchemaType) -> ModelType:
         new_obj_data = new_obj.model_dump()
