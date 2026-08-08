@@ -99,12 +99,14 @@ def sample_single_user(db_session):
 
 
 def test_get_multi_users_returns_success_status(test_http_client):
+    """Tests GET /users endpoint returns HTTP status code 200."""
 
     response = test_http_client.get("/api/v1/users")
     assert response.status_code == status.HTTP_200_OK
 
 
 def test_get_multi_users_returns_one_item(test_http_client, sample_single_user):
+    """Tests GET /users endpoint returns a single item."""
 
     response = test_http_client.get("/api/v1/users")
     data = response.json()
@@ -112,6 +114,7 @@ def test_get_multi_users_returns_one_item(test_http_client, sample_single_user):
 
 
 def test_get_multi_users_returns_valid_user_fields(test_http_client, sample_single_user):
+    """Tests GET /users endpoint returns an item and checks all fields."""
 
     response = test_http_client.get("/api/v1/users")
     data = response.json()
