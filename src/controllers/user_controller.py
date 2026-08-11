@@ -16,7 +16,7 @@ def get_multi_users(pagination: PaginationParams = Depends(),db: Session = Depen
     user_service = UserService(user_repo)
     return user_service.get_multi(offset=pagination.offset, limit=pagination.limit)
 
-@router.get("/{id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse)
 def get_user_by_id(user_id: UUID, db: Session = Depends(get_db)) -> UserResponse:
     user_repo = UserRepository(db)
     user_service = UserService(user_repo)
@@ -28,7 +28,7 @@ def create_user(new_user: UserCreate, db: Session = Depends(get_db)) -> UserResp
     user_service = UserService(user_repo)
     return user_service.create(new_user)
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: UUID, db: Session = Depends(get_db)) -> None:
     user_repo = UserRepository(db)
     user_service = UserService(user_repo)
