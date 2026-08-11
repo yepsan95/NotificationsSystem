@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlalchemy.orm import Session
 from src.services.user_service import UserService
 from src.repositories.user_repository import UserRepository
@@ -27,3 +27,15 @@ def create_user(new_user: UserCreate, db: Session = Depends(get_db)) -> UserResp
     user_repo = UserRepository(db)
     user_service = UserService(user_repo)
     return user_service.create(new_user)
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: UUID, db: Session = Depends(get_db)) -> None:
+    user_repo = UserRepository(db)
+    user_service = UserService(user_repo)
+    succeeded =  user_service.delete(user_id)
+    if not succeeded:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user_id} not found."
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
