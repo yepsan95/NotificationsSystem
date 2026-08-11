@@ -33,7 +33,7 @@ class TestDatabaseClient(BaseDatabaseClient):
 
 
 # Loads variables from the .env file to Python's memory
-load_dotenv(".env.test")
+load_dotenv(".env")
 
 # Get the database credentials from the environment variables
 TEST_DB_DOCKER_CONTAINER = os.getenv("TEST_DB_DOCKER_CONTAINER")
