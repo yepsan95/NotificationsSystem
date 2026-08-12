@@ -74,4 +74,4 @@ class BaseRepository(Generic[ModelType, CreateSchemaType]):
             return True
         except SQLAlchemyError as e:
             self.db.rollback()
-            self.handle_exception("delete", e)
+            self._handle_exception("delete", e)
