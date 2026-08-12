@@ -2,7 +2,7 @@ import logging
 from typing import Generic, TypeVar, Sequence
 from uuid import UUID
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from src.models.base_model import Base
@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 # Create generic types for BaseRepository class
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class BaseRepository(Generic[ModelType, CreateSchemaType]):
+class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """Base repository class. Will be inherited by all other repositories."""
 
     def __init__(self, db: Session, model: type[ModelType]):
@@ -63,6 +64,21 @@ class BaseRepository(Generic[ModelType, CreateSchemaType]):
         except SQLAlchemyError as e:
             self.db.rollback()
             self._handle_exception("create", e)
+
+    def update(self, id: UUID, update_obj: UpdateSchemaType) -> ModelType:
+        obj_to_update = self.get_by_id(id)
+        if not obj_to_update:
+            return False
+        try:
+            update_obj_dict = update_obj.model_dump(exclude_unset=True)
+            statement = update(self.model).where(self.model.id == id).values(**update_obj_dict).returning(self.model)
+            updated_obj = self.db.scalars(statement).one()
+            self.db.commit()
+            self.db.refresh(updated_obj)
+            return updated_obj
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            self._handle_exception("update", e)
 
     def delete(self, id: UUID) -> bool:
         db_obj = self.get_by_id(id)

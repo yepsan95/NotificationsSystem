@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.services.user_service import UserService
 from src.services.exceptions import UserNotFoundError, UserInvalidPasswordError, UserEmailAlreadyExistsError, InvalidPaginationError, DatabaseConnectionError
 from src.repositories.user_repository import UserRepository
-from src.schemas.user_schema import UserResponse, UserCreate
+from src.schemas.user_schema import UserResponse, UserCreate, UserUpdate
 from src.database.real_database import get_db
 from src.controllers.dependencies import PaginationParams
 
@@ -57,6 +57,29 @@ def create_user(new_user: UserCreate, db: Session = Depends(get_db)) -> UserResp
     except UserEmailAlreadyExistsError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
+            detail=str(e)
+        )
+
+
+@router.patch("/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
+def update_user(user_id: UUID, update_user: UserUpdate, db: Session = Depends(get_db)) -> UserResponse:
+    user_repo = UserRepository(db)
+    user_service = UserService(user_repo)
+    try:
+        return user_service.update(user_id, update_user)
+    except UserInvalidPasswordError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except UserEmailAlreadyExistsError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e)
+        )
+    except UserNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e)
         )
 

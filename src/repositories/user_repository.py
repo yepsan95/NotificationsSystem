@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from src.repositories.base_repository import BaseRepository
 from src.models.user_model import User
-from src.schemas.user_schema import UserCreate
+from src.schemas.user_schema import UserCreate, UserUpdate
 
 
-class UserRepository(BaseRepository[User, UserCreate]):
+class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
     """Repository layer for entity <User>."""
     
     def __init__(self, db: Session):

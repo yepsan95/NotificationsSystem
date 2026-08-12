@@ -1,7 +1,7 @@
 from uuid import UUID
 from pwdlib import PasswordHash
 from src.models.user_model import User
-from src.schemas.user_schema import UserCreate
+from src.schemas.user_schema import UserCreate, UserUpdate
 from src.repositories.user_repository import UserRepository
 from src.services.exceptions import UserNotFoundError, UserInvalidPasswordError, UserEmailAlreadyExistsError, InvalidPaginationError
 
@@ -35,6 +35,18 @@ class UserService:
             raise UserEmailAlreadyExistsError(new_user.email)
         hashed_password = password_context.hash(new_user.password)
         return self.repo.create(new_user, hashed_password=hashed_password)
+
+    def update(self, user_id: UUID, update_user: UserUpdate) -> User:
+        if update_user.email:
+            existing_user_with_same_email = self.repo.get_by_email(update_user.email)
+            is_same_user = existing_user_with_same_email and existing_user_with_same_email.id == user_id
+            if existing_user_with_same_email and not is_same_user:
+                raise UserEmailAlreadyExistsError(update_user.email)
+            updated_user = self.repo.update(user_id, update_user)
+            if not updated_user:
+                raise UserNotFoundError(user_id)
+            return updated_user
+
 
     def delete(self, user_id: UUID) -> bool:
         user_exists = self.repo.delete(user_id)
