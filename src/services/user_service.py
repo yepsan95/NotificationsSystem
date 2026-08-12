@@ -3,7 +3,7 @@ from pwdlib import PasswordHash
 from src.models.user_model import User
 from src.schemas.user_schema import UserCreate
 from src.repositories.user_repository import UserRepository
-from src.services.exceptions import UserNotFoundException
+from src.services.exceptions import UserNotFoundError, InvalidPaginationError
 
 
 password_context = PasswordHash.recommended()
@@ -16,13 +16,15 @@ class UserService:
         self.repo = repo
 
     def get_multi(self, *, offset: int = 0, limit: int = 100) -> list[User]:
+        if offset < 0 or limit < 1 or limit > 100:
+            raise InvalidPaginationError
         users = self.repo.get_multi(offset=offset, limit=limit)
         return users
 
     def get_by_id(self, user_id: UUID) -> User:
         user = self.repo.get_by_id(user_id)
         if not user:
-            raise UserNotFoundException(user_id)
+            raise UserNotFoundError(user_id)
         return user
 
     def create(self, new_user: UserCreate) -> User:

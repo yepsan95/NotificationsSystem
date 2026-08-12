@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlalchemy.orm import Session
 from src.services.user_service import UserService
-from src.services.exceptions import UserNotFoundException
+from src.services.exceptions import UserNotFoundError, InvalidPaginationError, DatabaseConnectionError
 from src.repositories.user_repository import UserRepository
 from src.schemas.user_schema import UserResponse, UserCreate
 from src.database.real_database import get_db
@@ -15,7 +15,18 @@ router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 def get_multi_users(pagination: PaginationParams = Depends(),db: Session = Depends(get_db)) -> list[UserResponse]:
     user_repo = UserRepository(db)
     user_service = UserService(user_repo)
-    return user_service.get_multi(offset=pagination.offset, limit=pagination.limit)
+    try:
+        return user_service.get_multi(offset=pagination.offset, limit=pagination.limit)
+    except InvalidPaginationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except DatabaseConnectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Service not available. Try again later."
+        )
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user_by_id(user_id: UUID, db: Session = Depends(get_db)) -> UserResponse:
@@ -23,7 +34,7 @@ def get_user_by_id(user_id: UUID, db: Session = Depends(get_db)) -> UserResponse
     user_service = UserService(user_repo)
     try:
         return user_service.get_by_id(user_id)
-    except UserNotFoundException as e:
+    except UserNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

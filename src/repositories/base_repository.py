@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from src.models.base_model import Base
+from src.services.exceptions import DatabaseConnectionError
 
 
 # Initialize logger for error logs
@@ -35,7 +36,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType]):
                 exception,
                 exc_info=True
             )
-            raise exception
+            raise DatabaseConnectionError("Lost connection with database.")
 
     def get_by_id(self, id: UUID) -> ModelType | None:
         try:
