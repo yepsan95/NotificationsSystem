@@ -2,6 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status, HTTPException, Response
 from sqlalchemy.orm import Session
 from src.services.user_service import UserService
+from src.services.exceptions import UserNotFoundException
 from src.repositories.user_repository import UserRepository
 from src.schemas.user_schema import UserResponse, UserCreate
 from src.database.real_database import get_db
@@ -20,7 +21,10 @@ def get_multi_users(pagination: PaginationParams = Depends(),db: Session = Depen
 def get_user_by_id(user_id: UUID, db: Session = Depends(get_db)) -> UserResponse:
     user_repo = UserRepository(db)
     user_service = UserService(user_repo)
-    return user_service.get_by_id(user_id)
+    try:
+        return user_service.get_by_id(user_id)
+    except UserNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(new_user: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
@@ -32,7 +36,7 @@ def create_user(new_user: UserCreate, db: Session = Depends(get_db)) -> UserResp
 def delete_user(user_id: UUID, db: Session = Depends(get_db)) -> None:
     user_repo = UserRepository(db)
     user_service = UserService(user_repo)
-    succeeded =  user_service.delete(user_id)
+    succeeded = user_service.delete(user_id)
     if not succeeded:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
