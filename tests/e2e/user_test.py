@@ -95,7 +95,7 @@ def sample_single_user(db_session):
     db_session.add(new_user)
     db_session.commit()
 
-    return user_data
+    return new_user
 
 
 @pytest.fixture
@@ -268,6 +268,9 @@ def test_get_multi_users_returns_success_status_and_empty_list(test_http_client)
     response = test_http_client.get("/api/v1/users")
     assert response.status_code == status.HTTP_200_OK
 
+    data = response.json()
+    assert data == []
+
 
 def test_get_multi_users_returns_success_status_and_one_item(test_http_client, sample_single_user):
     """
@@ -282,10 +285,10 @@ def test_get_multi_users_returns_success_status_and_one_item(test_http_client, s
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
-    assert (len(data) == 1)
+    assert len(data) == 1
 
     user_data = data[0]
-    assert all(user_data.get(k) == v for k, v in sample_single_user.items())
+    assert all(user_data.get(k) == v for k, v in sample_single_user.get_safe_attributes().items())
 
 
 def test_get_multi_users_returns_success_status_and_multiple_items(test_http_client, sample_multiple_users):
@@ -302,7 +305,7 @@ def test_get_multi_users_returns_success_status_and_multiple_items(test_http_cli
 
     users_data = response.json()
     sample_users_data = sample_multiple_users[:10]
-    assert (len(users_data) == len(sample_users_data))
+    assert len(users_data) == len(sample_users_data)
     assert all(all(user.get(k) == v for k, v in sample_multiple_users[index].items()) for index, user in enumerate(users_data))
 
 
@@ -323,7 +326,7 @@ def test_get_multi_users_pagination(test_http_client, sample_multiple_users):
     assert response.status_code == status.HTTP_200_OK
 
     paginated_users_data = response.json()
-    assert (len(paginated_users_data) == limit)
+    assert len(paginated_users_data) == limit
 
     paginated_sample_users = sample_multiple_users[offset:offset + limit]
     assert all(all(user.get(k) == v for k, v in paginated_sample_users[index].items()) for index, user in enumerate(paginated_users_data))
@@ -349,3 +352,36 @@ def test_get_multi_users_returns_failure_when_database_down(test_http_client):
     """
 
     pass
+
+
+def test_get_user_by_id_returns_success_status_and_one_item(test_http_client, sample_single_user):
+    """
+    Tests GET /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 200.
+    - response returns user with correct id.
+    - validate user's fields.
+    """
+
+    sample_user_dict = sample_single_user.get_safe_attributes()
+    user_id = sample_user_dict["id"]
+
+    response = test_http_client.get(f"/api/v1/users/{user_id}")
+    assert response.status_code == status.HTTP_200_OK
+
+    user_data = response.json()
+    assert user_data["id"] == user_id
+
+    assert all(user_data.get(k) == v for k, v in sample_user_dict.items())
+
+
+def test_get_user_by_id_returns_failure_when_user_does_not_exist(test_http_client):
+    """
+    Tests GET /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 404 when user with requested id does not exist.
+    """
+
+    user_id = "1d211bec-648d-40a6-8c53-ff88421aadf1"
+    response = test_http_client.get(f"/api/v1/users/{user_id}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
