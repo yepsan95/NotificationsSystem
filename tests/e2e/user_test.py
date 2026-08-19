@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from fastapi import status
 from fastapi.testclient import TestClient
 from src.models.base_model import Base
@@ -55,7 +56,7 @@ def db_session():
 
 
 @pytest.fixture(scope="function")
-def test_http_client():
+def test_http_client(db_session):
     """Fixture for test HTTP client."""
 
     # Before Each stage
@@ -70,6 +71,10 @@ def test_http_client():
 
     # After Each stage
     # The code here will execute after each test
+
+    for db_table in reversed(Base.metadata.sorted_tables):
+        db_session.execute(db_table.delete())
+    db_session.commit()
 
     print("\n[After Each] Cleaning dependency overrides and restoring database state...")
 
@@ -382,6 +387,189 @@ def test_get_user_by_id_returns_failure_when_user_does_not_exist(test_http_clien
     - response includes HTTP status code 404 when user with requested id does not exist.
     """
 
-    user_id = "1d211bec-648d-40a6-8c53-ff88421aadf1"
+    user_id = str(uuid.uuid4())
     response = test_http_client.get(f"/api/v1/users/{user_id}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_create_user_returns_success_status_and_one_item_with_optional_fields(test_http_client):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 201 when payload includes optional fields.
+    - response returns one user.
+    - validate user's fields.
+    """
+
+    new_user_payload = {
+        "first_name": "Linus",
+        "middle_name": "Benedict",
+        "last_name": "Torvalds",
+        "email": "linus@linuxfoundation.org",
+        "password": "ILoveTux"
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    user_data = response.json()
+    del new_user_payload["password"]
+    assert all(user_data.get(k) == v for k, v in new_user_payload.items())
+
+
+def test_create_user_returns_success_status_and_one_item_with_required_fields(test_http_client):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 201 when payload includes only required fields.
+    - response returns one user.
+    - validate user's fields.
+    """
+
+    new_user_payload = {
+        "first_name": "Linus",
+        "last_name": "Torvalds",
+        "email": "linus@linuxfoundation.org",
+        "password": "ILoveTux"
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    user_data = response.json()
+    del new_user_payload["password"]
+    assert all(user_data.get(k) == v for k, v in new_user_payload.items())
+
+
+def test_create_user_returns_failure_when_missing_required_fields(test_http_client):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when payload is missing required fields.
+    """
+
+    new_user_payload = {
+        "first_name": "Linus",
+        "last_name": "Torvalds",
+        "password": "ILoveTux"
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_create_user_returns_success_status_and_one_item_with_trailing_whitespaces(test_http_client):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 201 when payload includes fields with trailing whitespaces.
+    - response returns one user.
+    - validate user's fields.
+    """
+
+    new_user_payload = {
+        "first_name": "    Linus    ",
+        "middle_name": "    Benedict    ",
+        "last_name": "    Torvalds    ",
+        "email": "    linus@linuxfoundation.org    ",
+        "password": "    ILoveTux    "
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    user_data = response.json()
+    new_user_payload = {k: v.strip() for k, v in new_user_payload.items()}
+    del new_user_payload["password"]
+    assert all(user_data.get(k) == v for k, v in new_user_payload.items())
+
+
+def test_create_user_returns_failure_when_email_already_exists(test_http_client, sample_single_user):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 409 when email already exists in the database.
+    """
+
+    new_user_payload = {
+        "first_name": "Linus",
+        "middle_name": "Tech",
+        "last_name": "Tips",
+        "email": "linus@linuxfoundation.org",
+        "password": "ILoveNCIX"
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_409_CONFLICT
+
+
+def test_create_user_returns_failure_when_email_has_invalid_format(test_http_client):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when email has invalid format.
+    """
+
+    new_user_payload = {
+        "first_name": "Linus",
+        "last_name": "Torvalds",
+        "email": "linus(at)linuxfoundation.org",
+        "password": "ILoveTux"
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_create_user_returns_failure_when_password_has_invalid_format(test_http_client, db_session):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when password is too short, i.e. less than 6 characters.
+    - response includes HTTP status code 422 when password is too long, i.e. greater than 16 characters.
+    - validate none of the users with invalid password format were created.
+    """
+
+    new_user_a_payload = {
+        "first_name": "Linus",
+        "middle_name": "Benedict",
+        "last_name": "Torvalds",
+        "email": "linus@linuxfoundation.org",
+        "password": "Linux"
+    }
+
+    response_a = test_http_client.post("/api/v1/users", json=new_user_a_payload)
+    assert response_a.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    new_user_b_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux."
+    },
+
+    response_b = test_http_client.post("/api/v1/users", json=new_user_b_payload)
+    assert response_b.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    users_in_database = db_session.query(User).limit(5).all()
+    assert users_in_database == []
+
+
+def test_create_user_returns_failure_when_fields_have_incorrect_data_types(test_http_client):
+    """
+    Tests POST /users endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when payload includes fields with incorrect data types.
+    """
+
+    new_user_payload = {
+        "first_name": ["Linus"],
+        "middle_name": 98,
+        "last_name": "Torvalds",
+        "email": "linus@linuxfoundation.org",
+        "password": ("ILoveTux", )
+    }
+
+    response = test_http_client.post("/api/v1/users", json=new_user_payload)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
