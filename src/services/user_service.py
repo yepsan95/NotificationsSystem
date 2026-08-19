@@ -47,7 +47,6 @@ class UserService:
                 raise UserNotFoundError(user_id)
             return updated_user
 
-
     def delete(self, user_id: UUID) -> bool:
         user_exists = self.repo.delete(user_id)
         if not user_exists:
