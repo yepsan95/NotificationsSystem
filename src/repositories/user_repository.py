@@ -1,6 +1,6 @@
 import logging
 from uuid import UUID
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from src.repositories.base_repository import BaseRepository
@@ -33,3 +33,20 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
         except SQLAlchemyError as e:
             self.db.rollback()
             self._handle_exception("create", e)
+
+    def replace(self, user_id: UUID, replace_user: UserCreate, hashed_password: str) -> User:
+        user_to_replace = self.get_by_id(user_id)
+        if not user_to_replace:
+            return False
+        try:
+            replace_user_data = replace_user.model_dump()
+            replace_user_data.pop("password", None)
+            replace_user_data["password_hash"] = hashed_password
+            statement = update(User).where(User.id == user_id).values(**replace_user_data).returning(User)
+            replaced_user = self.db.scalars(statement).one()
+            self.db.commit()
+            self.db.refresh(replaced_user)
+            return replaced_user
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            self._handle_exception("replace", e)

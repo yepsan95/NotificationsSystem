@@ -36,6 +36,20 @@ class UserService:
         hashed_password = password_context.hash(new_user.password)
         return self.repo.create(new_user, hashed_password=hashed_password)
 
+    def replace(self, user_id: UUID, replace_user: UserCreate) -> User:
+        if len(replace_user.password) < 6 or len(replace_user.password) > 16:
+            raise UserInvalidPasswordError("Password lenght must be >=6 and <= 16.")
+        if replace_user.email:
+            existing_user_with_same_email = self.repo.get_by_email(replace_user.email)
+            is_same_user = existing_user_with_same_email and existing_user_with_same_email.id == user_id
+            if existing_user_with_same_email and not is_same_user:
+                raise UserEmailAlreadyExistsError(replace_user.email)
+            hashed_password = password_context.hash(replace_user.password)
+            replaced_user = self.repo.replace(user_id, replace_user, hashed_password=hashed_password)
+            if not replaced_user:
+                raise UserNotFoundError(user_id)
+            return replaced_user
+
     def update(self, user_id: UUID, update_user: UserUpdate) -> User:
         if update_user.email:
             existing_user_with_same_email = self.repo.get_by_email(update_user.email)

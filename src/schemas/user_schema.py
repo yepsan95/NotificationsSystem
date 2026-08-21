@@ -28,7 +28,7 @@ class UserUpdate(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    first_name: str
+    first_name: str | None = None
     middle_name: str | None = None
-    last_name: str
-    email: EmailStr
+    last_name: str | None = None
+    email: EmailStr | None = None

@@ -65,6 +65,21 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             self.db.rollback()
             self._handle_exception("create", e)
 
+    def replace(self, id: UUID, replace_obj: CreateSchemaType) -> ModelType:
+        obj_to_replace = self.get_by_id(id)
+        if not obj_to_replace:
+            return False
+        try:
+            replace_obj_dict = replace_obj.model_dump()
+            statement = update(self.model).where(self.model.id == id).values(**replace_obj_dict).returning(self.model)
+            replaced_obj = self.db.scalars(statement).one()
+            self.db.commit()
+            self.db.refresh(replaced_obj)
+            return replaced_obj
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            self._handle_exception("replace", e)
+
     def update(self, id: UUID, update_obj: UpdateSchemaType) -> ModelType:
         obj_to_update = self.get_by_id(id)
         if not obj_to_update:
