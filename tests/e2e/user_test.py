@@ -262,7 +262,7 @@ def sample_multiple_users(db_session):
     return users_data
 
 
-def test_get_multi_users_returns_success_status_and_empty_list(test_http_client):
+def test_get_multi_users_returns_success_and_empty_list(test_http_client):
     """
     Tests GET /users endpoint.
     Asserts:
@@ -277,7 +277,7 @@ def test_get_multi_users_returns_success_status_and_empty_list(test_http_client)
     assert data == []
 
 
-def test_get_multi_users_returns_success_status_and_one_item(test_http_client, sample_single_user):
+def test_get_multi_users_returns_success_and_one_item(test_http_client, sample_single_user):
     """
     Tests GET /users endpoint.
     Asserts:
@@ -296,7 +296,7 @@ def test_get_multi_users_returns_success_status_and_one_item(test_http_client, s
     assert all(user_data.get(k) == v for k, v in sample_single_user.get_safe_attributes().items())
 
 
-def test_get_multi_users_returns_success_status_and_multiple_items(test_http_client, sample_multiple_users):
+def test_get_multi_users_returns_success_and_multiple_items(test_http_client, sample_multiple_users):
     """
     Tests GET /users endpoint.
     Asserts:
@@ -359,7 +359,7 @@ def test_get_multi_users_returns_failure_when_database_down(test_http_client):
     pass
 
 
-def test_get_user_by_id_returns_success_status_and_one_item(test_http_client, sample_single_user):
+def test_get_user_by_id_returns_success_and_one_item(test_http_client, sample_single_user):
     """
     Tests GET /users/{user_id} endpoint.
     Asserts:
@@ -392,13 +392,13 @@ def test_get_user_by_id_returns_failure_when_user_does_not_exist(test_http_clien
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_create_user_returns_success_status_and_one_item_with_optional_fields(test_http_client):
+def test_create_user_returns_success_and_one_item_with_optional_fields(test_http_client):
     """
     Tests POST /users endpoint.
     Asserts:
     - response includes HTTP status code 201 when payload includes optional fields.
-    - response returns one user.
-    - validate user's fields.
+    - response returns created user.
+    - validate created user's fields.
     """
 
     new_user_payload = {
@@ -417,17 +417,18 @@ def test_create_user_returns_success_status_and_one_item_with_optional_fields(te
     assert all(user_data.get(k) == v for k, v in new_user_payload.items())
 
 
-def test_create_user_returns_success_status_and_one_item_with_required_fields(test_http_client):
+def test_create_user_returns_success_and_one_item_with_required_fields(test_http_client):
     """
     Tests POST /users endpoint.
     Asserts:
     - response includes HTTP status code 201 when payload includes only required fields.
-    - response returns one user.
-    - validate user's fields.
+    - response returns created user.
+    - validate created user's fields.
     """
 
     new_user_payload = {
         "first_name": "Linus",
+        "middle_name": None,
         "last_name": "Torvalds",
         "email": "linus@linuxfoundation.org",
         "password": "ILoveTux"
@@ -458,13 +459,13 @@ def test_create_user_returns_failure_when_missing_required_fields(test_http_clie
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_create_user_returns_success_status_and_one_item_with_trailing_whitespaces(test_http_client):
+def test_create_user_returns_success_and_one_item_with_trailing_whitespaces(test_http_client):
     """
     Tests POST /users endpoint.
     Asserts:
     - response includes HTTP status code 201 when payload includes fields with trailing whitespaces.
-    - response returns one user.
-    - validate user's fields.
+    - response returns created user.
+    - validate created user's fields.
     """
 
     new_user_payload = {
@@ -573,3 +574,280 @@ def test_create_user_returns_failure_when_fields_have_incorrect_data_types(test_
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_replace_user_returns_success_and_replaced_item_with_optional_fields(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 200.
+    - response returns replaced user.
+    - validate replaced user's fields.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "FREEdom"
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_200_OK
+
+    replaced_user_data = response.json()
+    assert replaced_user_data["id"] == user_id
+
+    del replace_user_payload["password"]
+    assert all(replaced_user_data.get(k) == v for k, v in replace_user_payload.items())
+
+
+def test_replace_user_returns_success_and_replaced_item_with_required_fields(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 200.
+    - response returns replaced user.
+    - validate replaced user's fields.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": None,
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "FREEdom"
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_200_OK
+
+    replaced_user_data = response.json()
+    assert replaced_user_data["id"] == user_id
+
+    del replace_user_payload["password"]
+    assert all(replaced_user_data.get(k) == v for k, v in replace_user_payload.items())
+
+
+def test_replace_user_idempotency_check(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - first response includes HTTP status code 200.
+    - second response includes HTTP status code 200.
+    - first and second responses are identical.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "FREEdom"
+    }
+
+    response_a = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response_a.status_code == status.HTTP_200_OK
+
+    response_b = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response_b.status_code == status.HTTP_200_OK
+
+    replaced_user_data_a = response_a.json()
+    replaced_user_data_b = response_b.json()
+
+    del replaced_user_data_a["updated_at"]
+    del replaced_user_data_b["updated_at"]
+
+    assert replaced_user_data_a == replaced_user_data_b
+
+
+def test_replace_user_returns_failure_when_missing_required_fields(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when payload is missing required fields.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "password": "FREEdom"
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_replace_user_returns_success_and_replaced_item_with_trailing_whitespaces(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 200 when payload includes fields with trailing whitespaces.
+    - response returns replaced user.
+    - validate replaced user's fields.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "    Richard    ",
+        "middle_name": "    Matthew    ",
+        "last_name": "    Stallman    ",
+        "email": "    rms@gnu.org    ",
+        "password": "    FREEdom    "
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_200_OK
+
+    replaced_user_data = response.json()
+    assert replaced_user_data["id"] == user_id
+
+    replace_user_payload = {k: v.strip() for k, v in replace_user_payload.items()}
+    del replace_user_payload["password"]
+    assert all(replaced_user_data.get(k) == v for k, v in replace_user_payload.items())
+
+
+def test_replace_user_returns_failure_when_email_already_exists(test_http_client, sample_single_user, db_session):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 409 when email already exists in the database.
+    """
+
+    new_user_data = {
+        "first_name": "Rick",
+        "middle_name": "Matt",
+        "last_name": "Stally",
+        "email": "rms@gnu.org",
+        "password": "OpenSource"
+    }
+    hashed_password = password_context.hash(new_user_data["password"])
+    new_user_data.pop("password", None)
+    new_user = User(**new_user_data, password_hash=hashed_password)
+    db_session.add(new_user)
+    db_session.commit()
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "FREEdom"
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_409_CONFLICT
+
+
+def test_replace_user_returns_failure_when_email_has_invalid_format(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when email has invalid format.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms(at)gnu.org",
+        "password": "FREEdom"
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_replace_user_returns_failure_when_password_has_invalid_format(test_http_client, sample_single_user, db_session):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when password is too short, i.e. less than 6 characters.
+    - response includes HTTP status code 422 when password is too long, i.e. greater than 16 characters.
+    - validate none of the users with invalid password format were replaced.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_a_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "GNU"
+    }
+
+    response_a = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_a_payload)
+    assert response_a.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    replace_user_b_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux."
+    }
+
+    response_b = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_b_payload)
+    assert response_b.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    original_updated_at = sample_single_user.get_safe_attributes()["updated_at"]
+    original_user = db_session.get(User, user_id)
+    assert original_updated_at == original_user.updated_at.isoformat()
+
+
+def test_replace_user_returns_failure_when_fields_have_incorrect_data_types(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 422 when payload includes fields with incorrect data types.
+    """
+
+    user_id = sample_single_user.get_safe_attributes()["id"]
+
+    replace_user_payload = {
+        "first_name": ["Richard"],
+        "middle_name": 77,
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": ("FREEdom", )
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+def test_replace_user_returns_failure_when_user_does_not_exist(test_http_client, sample_single_user):
+    """
+    Tests PUT /users/{user_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 404 when user does not exist.
+    """
+
+    user_id = str(uuid.uuid4())
+
+    replace_user_payload = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "password": "FREEdom"
+    }
+
+    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
