@@ -40,8 +40,8 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             return False
         try:
             replace_user_data = replace_user.model_dump()
-            replace_user_data.pop("password", None)
             replace_user_data["password_hash"] = hashed_password
+            replace_user_data.pop("password", None)
             statement = update(User).where(User.id == user_id).values(**replace_user_data).returning(User)
             replaced_user = self.db.scalars(statement).one()
             self.db.commit()
@@ -50,3 +50,21 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
         except SQLAlchemyError as e:
             self.db.rollback()
             self._handle_exception("replace", e)
+
+    def update(self, user_id: UUID, update_user: UserUpdate, hashed_password: str | None = None) -> User:
+        user_to_update = self.get_by_id(user_id)
+        if not user_to_update:
+            return False
+        try:
+            update_user_data = update_user.model_dump(exclude_unset=True)
+            if hashed_password:
+                update_user_data["password_hash"] = hashed_password
+            update_user_data.pop("password", None)
+            statement = update(User).where(User.id == user_id).values(**update_user_data).returning(User)
+            updated_user = self.db.scalars(statement).one()
+            self.db.commit()
+            self.db.refresh(updated_user)
+            return updated_user
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            self._handle_exception("update", e)
