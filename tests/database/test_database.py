@@ -19,7 +19,7 @@ class TestDatabaseClient(BaseDatabaseClient):
         # the database hostname will be the name of the container.
 
         is_localhost = hostname in ["localhost", "127.0.0.1"]
-        is_docker_container = hostname in container_names
+        is_docker_container = hostname in [*container_names, "0.0.0.0"]
         has_test_keyword = "test" in actual_db_name.lower()
 
         if not (is_localhost or is_docker_container) or not has_test_keyword:
