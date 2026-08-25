@@ -10,7 +10,7 @@ class User(Base):
     """Model for entity <User>."""
 
     __tablename__ = "users"
-    
+
     first_name: Mapped[str] = mapped_column(index=True, nullable=False)
     middle_name: Mapped[str] = mapped_column(index=True, nullable=True)
     last_name: Mapped[str] = mapped_column(index=True, nullable=False)

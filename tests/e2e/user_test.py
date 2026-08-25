@@ -76,7 +76,9 @@ def test_http_client(db_session):
         db_session.execute(db_table.delete())
     db_session.commit()
 
-    print("\n[After Each] Cleaning dependency overrides and restoring database state...")
+    print(
+        "\n[After Each] Cleaning dependency overrides and restoring database state..."
+    )
 
     app.dependency_overrides.clear()
 
@@ -89,7 +91,7 @@ def sample_single_user(db_session):
         "first_name": "Linus",
         "middle_name": "Benedict",
         "last_name": "Torvalds",
-        "email": "linus@linuxfoundation.org"
+        "email": "linus@linuxfoundation.org",
     }
     user_password = "ILoveTux"
 
@@ -113,148 +115,154 @@ def sample_multiple_users(db_session):
             "middle_name": "Benedict",
             "last_name": "Torvalds",
             "email": "linus@linuxfoundation.org",
-            "password": "ILoveTux"
+            "password": "ILoveTux",
         },
         {
             "first_name": "Richard",
             "middle_name": "Matthew",
             "last_name": "Stallman",
             "email": "rms@gnu.org",
-            "password": "FREEdom"
+            "password": "FREEdom",
         },
         {
             "first_name": "Guido",
             "middle_name": "Van",
             "last_name": "Rossum",
             "email": "guido@python.org",
-            "password": "ZenOfPython"
+            "password": "ZenOfPython",
         },
         {
             "first_name": "Tim",
             "middle_name": "John",
             "last_name": "Berners-Lee",
             "email": "timbl@w3.org",
-            "password": "Web3IsAwesome"
+            "password": "Web3IsAwesome",
         },
         {
             "first_name": "Miller",
             "middle_name": "Puckette",
             "last_name": "Smith",
             "email": "msp@ucsd.edu",
-            "password": "Pd>>Max"
+            "password": "Pd>>Max",
         },
         {
             "first_name": "Dennis",
             "middle_name": "MacAlistair",
             "last_name": "Ritchie",
             "email": "dmr@bell-labs.com",
-            "password": "CAndUnix1972"
+            "password": "CAndUnix1972",
         },
         {
             "first_name": "Ken",
             "middle_name": "Lane",
             "last_name": "Thompson",
             "email": "ken@google.com",
-            "password": "GoAndB311Labs"
+            "password": "GoAndB311Labs",
         },
         {
             "first_name": "Brian",
             "middle_name": "Wilson",
             "last_name": "Kernighan",
             "email": "bwk@cs.princeton.edu",
-            "password": "AWKandTheCBook"
+            "password": "AWKandTheCBook",
         },
         {
             "first_name": "Yukihiro",
             "middle_name": "",
             "last_name": "Matsumoto",
             "email": "matz@ruby-lang.org",
-            "password": "MatzIsNiceAndSoAreWe"
+            "password": "MatzIsNiceAndSoAreWe",
         },
         {
             "first_name": "Bram",
             "middle_name": "",
             "last_name": "Moolenaar",
             "email": "bram@vim.org",
-            "password": "HelpUgandaVim"
+            "password": "HelpUgandaVim",
         },
         {
             "first_name": "Daniel",
             "middle_name": "",
             "last_name": "Stenberg",
             "email": "daniel@haxx.se",
-            "password": "cURLTheWorld"
+            "password": "cURLTheWorld",
         },
         {
             "first_name": "Mitchell",
             "middle_name": "",
             "last_name": "Hashimoto",
             "email": "mitchell@hashicorp.com",
-            "password": "VagrantToTerraform"
+            "password": "VagrantToTerraform",
         },
         {
             "first_name": "Graydon",
             "middle_name": "",
             "last_name": "Hoare",
             "email": "graydon@pobox.com",
-            "password": "RustSafetyFirst"
+            "password": "RustSafetyFirst",
         },
         {
             "first_name": "Rasmus",
             "middle_name": "",
             "last_name": "Lerdorf",
             "email": "rasmus@php.net",
-            "password": "PersonalHomePage"
+            "password": "PersonalHomePage",
         },
         {
             "first_name": "Ian",
             "middle_name": "Murdock",
             "last_name": "Debian",
             "email": "ian@debian.org",
-            "password": "IanAndDebra1993"
+            "password": "IanAndDebra1993",
         },
         {
             "first_name": "Miguel",
             "middle_name": "",
             "last_name": "de Icaza",
             "email": "miguel@gnome.org",
-            "password": "GnomeAndMono"
+            "password": "GnomeAndMono",
         },
         {
             "first_name": "Michael",
             "middle_name": "",
             "last_name": "Widenius",
             "email": "monty@mariadb.org",
-            "password": "MontyMySQLMariaDB"
+            "password": "MontyMySQLMariaDB",
         },
         {
             "first_name": "Fabrice",
             "middle_name": "",
             "last_name": "Bellard",
             "email": "fabrice@bellard.org",
-            "password": "QEMUandFFmpeg"
+            "password": "QEMUandFFmpeg",
         },
         {
             "first_name": "Theo",
             "middle_name": "de",
             "last_name": "Raadt",
             "email": "deraadt@openbsd.org",
-            "password": "OpenBSDOpenSSH"
+            "password": "OpenBSDOpenSSH",
         },
         {
             "first_name": "Andrew",
             "middle_name": "",
             "last_name": "Tridgell",
             "email": "tridge@samba.org",
-            "password": "SambaAndRsync"
-        }
+            "password": "SambaAndRsync",
+        },
     ]
 
-    users_data = [{k: v for k, v in user.items() if k != "password"} | {"password_hash": password_context.hash(user["password"])} for user in users_data]
+    users_data = [
+        {k: v for k, v in user.items() if k != "password"}
+        | {"password_hash": password_context.hash(user["password"])}
+        for user in users_data
+    ]
 
     new_users = [User(**data) for data in users_data]
-    
-    users_data = [{k: v for k, v in user.items() if k != "password_hash"} for user in users_data]
+
+    users_data = [
+        {k: v for k, v in user.items() if k != "password_hash"} for user in users_data
+    ]
 
     db_session.add_all(new_users)
     db_session.commit()
@@ -277,7 +285,9 @@ def test_get_multi_users_returns_success_and_empty_list(test_http_client):
     assert data == []
 
 
-def test_get_multi_users_returns_success_and_one_item(test_http_client, sample_single_user):
+def test_get_multi_users_returns_success_and_one_item(
+    test_http_client, sample_single_user
+):
     """
     Tests GET /users endpoint.
     Asserts:
@@ -293,10 +303,15 @@ def test_get_multi_users_returns_success_and_one_item(test_http_client, sample_s
     assert len(data) == 1
 
     user_data = data[0]
-    assert all(user_data.get(k) == v for k, v in sample_single_user.get_safe_attributes().items())
+    assert all(
+        user_data.get(k) == v
+        for k, v in sample_single_user.get_safe_attributes().items()
+    )
 
 
-def test_get_multi_users_returns_success_and_multiple_items(test_http_client, sample_multiple_users):
+def test_get_multi_users_returns_success_and_multiple_items(
+    test_http_client, sample_multiple_users
+):
     """
     Tests GET /users endpoint.
     Asserts:
@@ -311,7 +326,10 @@ def test_get_multi_users_returns_success_and_multiple_items(test_http_client, sa
     users_data = response.json()
     sample_users_data = sample_multiple_users[:10]
     assert len(users_data) == len(sample_users_data)
-    assert all(all(user.get(k) == v for k, v in sample_multiple_users[index].items()) for index, user in enumerate(users_data))
+    assert all(
+        all(user.get(k) == v for k, v in sample_multiple_users[index].items())
+        for index, user in enumerate(users_data)
+    )
 
 
 def test_get_multi_users_pagination(test_http_client, sample_multiple_users):
@@ -323,7 +341,7 @@ def test_get_multi_users_pagination(test_http_client, sample_multiple_users):
     - response returns a list with an offset of 10 users.
     - validate users' fields.
     """
-    
+
     offset = 10
     limit = 5
 
@@ -333,8 +351,11 @@ def test_get_multi_users_pagination(test_http_client, sample_multiple_users):
     paginated_users_data = response.json()
     assert len(paginated_users_data) == limit
 
-    paginated_sample_users = sample_multiple_users[offset:offset + limit]
-    assert all(all(user.get(k) == v for k, v in paginated_sample_users[index].items()) for index, user in enumerate(paginated_users_data))
+    paginated_sample_users = sample_multiple_users[offset : offset + limit]
+    assert all(
+        all(user.get(k) == v for k, v in paginated_sample_users[index].items())
+        for index, user in enumerate(paginated_users_data)
+    )
 
 
 def test_get_multi_users_filters(test_http_client, sample_multiple_users):
@@ -359,7 +380,9 @@ def test_get_multi_users_returns_failure_when_database_down(test_http_client):
     pass
 
 
-def test_get_user_by_id_returns_success_and_one_item(test_http_client, sample_single_user):
+def test_get_user_by_id_returns_success_and_one_item(
+    test_http_client, sample_single_user
+):
     """
     Tests GET /users/{user_id} endpoint.
     Asserts:
@@ -392,7 +415,9 @@ def test_get_user_by_id_returns_failure_when_user_does_not_exist(test_http_clien
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_create_user_returns_success_and_one_item_with_optional_fields(test_http_client):
+def test_create_user_returns_success_and_one_item_with_optional_fields(
+    test_http_client,
+):
     """
     Tests POST /users endpoint.
     Asserts:
@@ -406,7 +431,7 @@ def test_create_user_returns_success_and_one_item_with_optional_fields(test_http
         "middle_name": "Benedict",
         "last_name": "Torvalds",
         "email": "linus@linuxfoundation.org",
-        "password": "ILoveTux"
+        "password": "ILoveTux",
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
@@ -417,7 +442,9 @@ def test_create_user_returns_success_and_one_item_with_optional_fields(test_http
     assert all(user_data.get(k) == v for k, v in new_user_payload.items())
 
 
-def test_create_user_returns_success_and_one_item_with_required_fields(test_http_client):
+def test_create_user_returns_success_and_one_item_with_required_fields(
+    test_http_client,
+):
     """
     Tests POST /users endpoint.
     Asserts:
@@ -431,7 +458,7 @@ def test_create_user_returns_success_and_one_item_with_required_fields(test_http
         "middle_name": None,
         "last_name": "Torvalds",
         "email": "linus@linuxfoundation.org",
-        "password": "ILoveTux"
+        "password": "ILoveTux",
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
@@ -452,14 +479,16 @@ def test_create_user_returns_failure_when_missing_required_fields(test_http_clie
     new_user_payload = {
         "first_name": "Linus",
         "last_name": "Torvalds",
-        "password": "ILoveTux"
+        "password": "ILoveTux",
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_create_user_returns_success_and_one_item_with_trailing_whitespaces(test_http_client):
+def test_create_user_returns_success_and_one_item_with_trailing_whitespaces(
+    test_http_client,
+):
     """
     Tests POST /users endpoint.
     Asserts:
@@ -473,7 +502,7 @@ def test_create_user_returns_success_and_one_item_with_trailing_whitespaces(test
         "middle_name": "    Benedict    ",
         "last_name": "    Torvalds    ",
         "email": "    linus@linuxfoundation.org    ",
-        "password": "    ILoveTux    "
+        "password": "    ILoveTux    ",
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
@@ -485,7 +514,9 @@ def test_create_user_returns_success_and_one_item_with_trailing_whitespaces(test
     assert all(user_data.get(k) == v for k, v in new_user_payload.items())
 
 
-def test_create_user_returns_failure_when_email_already_exists(test_http_client, sample_single_user):
+def test_create_user_returns_failure_when_email_already_exists(
+    test_http_client, sample_single_user
+):
     """
     Tests POST /users endpoint.
     Asserts:
@@ -497,7 +528,7 @@ def test_create_user_returns_failure_when_email_already_exists(test_http_client,
         "middle_name": "Tech",
         "last_name": "Tips",
         "email": "linus@linuxfoundation.org",
-        "password": "ILoveNCIX"
+        "password": "ILoveNCIX",
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
@@ -515,14 +546,16 @@ def test_create_user_returns_failure_when_email_has_invalid_format(test_http_cli
         "first_name": "Linus",
         "last_name": "Torvalds",
         "email": "linus(at)linuxfoundation.org",
-        "password": "ILoveTux"
+        "password": "ILoveTux",
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_create_user_returns_failure_when_password_has_invalid_format(test_http_client, db_session):
+def test_create_user_returns_failure_when_password_has_invalid_format(
+    test_http_client, db_session
+):
     """
     Tests POST /users endpoint.
     Asserts:
@@ -536,19 +569,21 @@ def test_create_user_returns_failure_when_password_has_invalid_format(test_http_
         "middle_name": "Benedict",
         "last_name": "Torvalds",
         "email": "linus@linuxfoundation.org",
-        "password": "Linux"
+        "password": "Linux",
     }
 
     response_a = test_http_client.post("/api/v1/users", json=new_user_a_payload)
     assert response_a.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
-    new_user_b_payload = {
-        "first_name": "Richard",
-        "middle_name": "Matthew",
-        "last_name": "Stallman",
-        "email": "rms@gnu.org",
-        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux."
-    },
+    new_user_b_payload = (
+        {
+            "first_name": "Richard",
+            "middle_name": "Matthew",
+            "last_name": "Stallman",
+            "email": "rms@gnu.org",
+            "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux.",
+        },
+    )
 
     response_b = test_http_client.post("/api/v1/users", json=new_user_b_payload)
     assert response_b.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
@@ -557,7 +592,9 @@ def test_create_user_returns_failure_when_password_has_invalid_format(test_http_
     assert users_in_database == []
 
 
-def test_create_user_returns_failure_when_fields_have_incorrect_data_types(test_http_client):
+def test_create_user_returns_failure_when_fields_have_incorrect_data_types(
+    test_http_client,
+):
     """
     Tests POST /users endpoint.
     Asserts:
@@ -569,14 +606,16 @@ def test_create_user_returns_failure_when_fields_have_incorrect_data_types(test_
         "middle_name": 98,
         "last_name": "Torvalds",
         "email": "linus@linuxfoundation.org",
-        "password": ("ILoveTux", )
+        "password": ("ILoveTux",),
     }
 
     response = test_http_client.post("/api/v1/users", json=new_user_payload)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_replace_user_returns_success_and_replaced_item_with_optional_fields(test_http_client, sample_single_user):
+def test_replace_user_returns_success_and_replaced_item_with_optional_fields(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -592,10 +631,12 @@ def test_replace_user_returns_success_and_replaced_item_with_optional_fields(tes
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     replaced_user_data = response.json()
@@ -605,7 +646,9 @@ def test_replace_user_returns_success_and_replaced_item_with_optional_fields(tes
     assert all(replaced_user_data.get(k) == v for k, v in replace_user_payload.items())
 
 
-def test_replace_user_returns_success_and_replaced_item_with_required_fields(test_http_client, sample_single_user):
+def test_replace_user_returns_success_and_replaced_item_with_required_fields(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -621,10 +664,12 @@ def test_replace_user_returns_success_and_replaced_item_with_required_fields(tes
         "middle_name": None,
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     replaced_user_data = response.json()
@@ -650,13 +695,17 @@ def test_replace_user_idempotency_check(test_http_client, sample_single_user):
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response_a = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response_a = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response_a.status_code == status.HTTP_200_OK
 
-    response_b = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response_b = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response_b.status_code == status.HTTP_200_OK
 
     replaced_user_data_a = response_a.json()
@@ -668,7 +717,9 @@ def test_replace_user_idempotency_check(test_http_client, sample_single_user):
     assert replaced_user_data_a == replaced_user_data_b
 
 
-def test_replace_user_returns_failure_when_missing_required_fields(test_http_client, sample_single_user):
+def test_replace_user_returns_failure_when_missing_required_fields(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -681,14 +732,18 @@ def test_replace_user_returns_failure_when_missing_required_fields(test_http_cli
         "first_name": "Richard",
         "middle_name": "Matthew",
         "last_name": "Stallman",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_replace_user_returns_success_and_replaced_item_with_trailing_whitespaces(test_http_client, sample_single_user):
+def test_replace_user_returns_success_and_replaced_item_with_trailing_whitespaces(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -704,10 +759,12 @@ def test_replace_user_returns_success_and_replaced_item_with_trailing_whitespace
         "middle_name": "    Matthew    ",
         "last_name": "    Stallman    ",
         "email": "    rms@gnu.org    ",
-        "password": "    FREEdom    "
+        "password": "    FREEdom    ",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     replaced_user_data = response.json()
@@ -718,7 +775,9 @@ def test_replace_user_returns_success_and_replaced_item_with_trailing_whitespace
     assert all(replaced_user_data.get(k) == v for k, v in replace_user_payload.items())
 
 
-def test_replace_user_returns_failure_when_email_already_exists(test_http_client, sample_single_user, db_session):
+def test_replace_user_returns_failure_when_email_already_exists(
+    test_http_client, sample_single_user, db_session
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -730,7 +789,7 @@ def test_replace_user_returns_failure_when_email_already_exists(test_http_client
         "middle_name": "Matt",
         "last_name": "Stally",
         "email": "rms@gnu.org",
-        "password": "OpenSource"
+        "password": "OpenSource",
     }
     hashed_password = password_context.hash(new_user_data["password"])
     new_user_data.pop("password", None)
@@ -745,14 +804,18 @@ def test_replace_user_returns_failure_when_email_already_exists(test_http_client
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-def test_replace_user_returns_failure_when_email_has_invalid_format(test_http_client, sample_single_user):
+def test_replace_user_returns_failure_when_email_has_invalid_format(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -766,14 +829,18 @@ def test_replace_user_returns_failure_when_email_has_invalid_format(test_http_cl
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms(at)gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_replace_user_returns_failure_when_password_has_invalid_format(test_http_client, sample_single_user, db_session):
+def test_replace_user_returns_failure_when_password_has_invalid_format(
+    test_http_client, sample_single_user, db_session
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -789,10 +856,12 @@ def test_replace_user_returns_failure_when_password_has_invalid_format(test_http
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "GNU"
+        "password": "GNU",
     }
 
-    response_a = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_a_payload)
+    response_a = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_a_payload
+    )
     assert response_a.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     replace_user_b_payload = {
@@ -800,10 +869,12 @@ def test_replace_user_returns_failure_when_password_has_invalid_format(test_http
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux."
+        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux.",
     }
 
-    response_b = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_b_payload)
+    response_b = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_b_payload
+    )
     assert response_b.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     original_updated_at = sample_single_user.get_safe_attributes()["updated_at"]
@@ -811,7 +882,9 @@ def test_replace_user_returns_failure_when_password_has_invalid_format(test_http
     assert original_updated_at == original_user.updated_at.isoformat()
 
 
-def test_replace_user_returns_failure_when_fields_have_incorrect_data_types(test_http_client, sample_single_user):
+def test_replace_user_returns_failure_when_fields_have_incorrect_data_types(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -825,14 +898,18 @@ def test_replace_user_returns_failure_when_fields_have_incorrect_data_types(test
         "middle_name": 77,
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": ("FREEdom", )
+        "password": ("FREEdom",),
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_replace_user_returns_failure_when_user_does_not_exist(test_http_client, sample_single_user):
+def test_replace_user_returns_failure_when_user_does_not_exist(
+    test_http_client, sample_single_user
+):
     """
     Tests PUT /users/{user_id} endpoint.
     Asserts:
@@ -846,14 +923,18 @@ def test_replace_user_returns_failure_when_user_does_not_exist(test_http_client,
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=replace_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=replace_user_payload
+    )
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_update_user_returns_success_and_updated_item_with_one_field(test_http_client, sample_single_user):
+def test_update_user_returns_success_and_updated_item_with_one_field(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -864,11 +945,11 @@ def test_update_user_returns_success_and_updated_item_with_one_field(test_http_c
 
     user_id = sample_single_user.get_safe_attributes()["id"]
 
-    update_user_payload = {
-        "first_name": "Freax"
-    }
+    update_user_payload = {"first_name": "Freax"}
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     updated_user_data = response.json()
@@ -877,7 +958,9 @@ def test_update_user_returns_success_and_updated_item_with_one_field(test_http_c
     assert all(updated_user_data.get(k) == v for k, v in update_user_payload.items())
 
 
-def test_update_user_returns_success_and_updated_item_with_multiple_fields(test_http_client, sample_single_user):
+def test_update_user_returns_success_and_updated_item_with_multiple_fields(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -893,10 +976,12 @@ def test_update_user_returns_success_and_updated_item_with_multiple_fields(test_
         "middle_name": "Van",
         "last_name": "Rossum",
         "email": "guido@python.org",
-        "password": "ZenOfPython"
+        "password": "ZenOfPython",
     }
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     updated_user_data = response.json()
@@ -906,7 +991,9 @@ def test_update_user_returns_success_and_updated_item_with_multiple_fields(test_
     assert all(updated_user_data.get(k) == v for k, v in update_user_payload.items())
 
 
-def test_update_user_returns_success_and_updated_item_with_empty_payload(test_http_client, sample_single_user):
+def test_update_user_returns_success_and_updated_item_with_empty_payload(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -921,7 +1008,9 @@ def test_update_user_returns_success_and_updated_item_with_empty_payload(test_ht
 
     update_user_payload = {}
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     updated_user_data = response.json()
@@ -930,7 +1019,9 @@ def test_update_user_returns_success_and_updated_item_with_empty_payload(test_ht
     assert all(updated_user_data.get(k) == v for k, v in original_sample_user.items())
 
 
-def test_update_user_returns_success_and_updated_item_with_same_values(test_http_client, sample_single_user):
+def test_update_user_returns_success_and_updated_item_with_same_values(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -947,7 +1038,9 @@ def test_update_user_returns_success_and_updated_item_with_same_values(test_http
 
     update_user_payload = {**original_sample_user}
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     updated_user_data = response.json()
@@ -956,7 +1049,9 @@ def test_update_user_returns_success_and_updated_item_with_same_values(test_http
     assert all(updated_user_data.get(k) == v for k, v in original_sample_user.items())
 
 
-def test_update_user_returns_success_and_updated_item_with_trailing_whitespaces(test_http_client, sample_single_user):
+def test_update_user_returns_success_and_updated_item_with_trailing_whitespaces(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -972,10 +1067,12 @@ def test_update_user_returns_success_and_updated_item_with_trailing_whitespaces(
         "middle_name": "    Matthew    ",
         "last_name": "    Stallman    ",
         "email": "    rms@gnu.org    ",
-        "password": "    FREEdom    "
+        "password": "    FREEdom    ",
     }
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_200_OK
 
     updated_user_data = response.json()
@@ -986,7 +1083,9 @@ def test_update_user_returns_success_and_updated_item_with_trailing_whitespaces(
     assert all(updated_user_data.get(k) == v for k, v in update_user_payload.items())
 
 
-def test_update_user_returns_failure_when_email_already_exists(test_http_client, sample_single_user, db_session):
+def test_update_user_returns_failure_when_email_already_exists(
+    test_http_client, sample_single_user, db_session
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -998,7 +1097,7 @@ def test_update_user_returns_failure_when_email_already_exists(test_http_client,
         "middle_name": "Matt",
         "last_name": "Stally",
         "email": "rms@gnu.org",
-        "password": "OpenSource"
+        "password": "OpenSource",
     }
     hashed_password = password_context.hash(new_user_data["password"])
     new_user_data.pop("password", None)
@@ -1013,14 +1112,18 @@ def test_update_user_returns_failure_when_email_already_exists(test_http_client,
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_409_CONFLICT
 
 
-def test_update_user_returns_failure_when_email_has_invalid_format(test_http_client, sample_single_user):
+def test_update_user_returns_failure_when_email_has_invalid_format(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -1034,14 +1137,18 @@ def test_update_user_returns_failure_when_email_has_invalid_format(test_http_cli
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms(at)gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.patch(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.patch(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_update_user_returns_failure_when_password_has_invalid_format(test_http_client, sample_single_user, db_session):
+def test_update_user_returns_failure_when_password_has_invalid_format(
+    test_http_client, sample_single_user, db_session
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -1057,10 +1164,12 @@ def test_update_user_returns_failure_when_password_has_invalid_format(test_http_
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "GNU"
+        "password": "GNU",
     }
 
-    response_a = test_http_client.put(f"/api/v1/users/{user_id}", json=update_user_a_payload)
+    response_a = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=update_user_a_payload
+    )
     assert response_a.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     update_user_b_payload = {
@@ -1068,10 +1177,12 @@ def test_update_user_returns_failure_when_password_has_invalid_format(test_http_
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux."
+        "password": "I'd just like to interject for a moment. What you're refering to as Linux, is in fact, GNU/Linux, or as I've recently taken to calling it, GNU plus Linux.",
     }
 
-    response_b = test_http_client.put(f"/api/v1/users/{user_id}", json=update_user_b_payload)
+    response_b = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=update_user_b_payload
+    )
     assert response_b.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     original_updated_at = sample_single_user.get_safe_attributes()["updated_at"]
@@ -1079,7 +1190,9 @@ def test_update_user_returns_failure_when_password_has_invalid_format(test_http_
     assert original_updated_at == original_user.updated_at.isoformat()
 
 
-def test_update_user_returns_failure_when_fields_have_incorrect_data_types(test_http_client, sample_single_user):
+def test_update_user_returns_failure_when_fields_have_incorrect_data_types(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -1093,14 +1206,18 @@ def test_update_user_returns_failure_when_fields_have_incorrect_data_types(test_
         "middle_name": 77,
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": ("FREEdom", )
+        "password": ("FREEdom",),
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
-def test_update_user_returns_failure_when_user_does_not_exist(test_http_client, sample_single_user):
+def test_update_user_returns_failure_when_user_does_not_exist(
+    test_http_client, sample_single_user
+):
     """
     Tests PATCH /users/{user_id} endpoint.
     Asserts:
@@ -1114,8 +1231,10 @@ def test_update_user_returns_failure_when_user_does_not_exist(test_http_client, 
         "middle_name": "Matthew",
         "last_name": "Stallman",
         "email": "rms@gnu.org",
-        "password": "FREEdom"
+        "password": "FREEdom",
     }
 
-    response = test_http_client.put(f"/api/v1/users/{user_id}", json=update_user_payload)
+    response = test_http_client.put(
+        f"/api/v1/users/{user_id}", json=update_user_payload
+    )
     assert response.status_code == status.HTTP_404_NOT_FOUND

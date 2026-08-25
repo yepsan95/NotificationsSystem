@@ -4,15 +4,20 @@ from src.database.real_database import db_engine, REAL_DATABASE_URL
 from src.models.base_model import Base
 from src.models.user_model import User
 
+
 def init_database():
     """Create physical PostgreSQL database and tables if they don't exist."""
-    
+
     current_url = None
     current_engine = None
     is_running_tests = "pytest" in sys.modules
-    
+
     if is_running_tests:
-        from tests.database.test_database import db_engine as test_db_engine, TEST_DATABASE_URL
+        from tests.database.test_database import (
+            db_engine as test_db_engine,
+            TEST_DATABASE_URL,
+        )
+
         current_url = TEST_DATABASE_URL
         current_engine = test_db_engine
         print("[TEST] Initializing test database...")

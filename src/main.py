@@ -8,7 +8,7 @@ from src.controllers.user_controller import router as user_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Asynchronous context manager function for initializing the application."""
-    
+
     # Startup stage
     # The code here will execute only once at startup
     init_database()
@@ -16,17 +16,13 @@ async def lifespan(app: FastAPI):
     # Pause stage
     # Here the API is already running and receiving clients' requests
     yield
-    
+
     # Shutdown stage
     # The code here will execute only once at shutdown
 
 
 # Initialize FastAPI application
-app = FastAPI(
-    title="Notifications System API",
-    version="1.0.0",
-    lifespan=lifespan
-)
+app = FastAPI(title="Notifications System API", version="1.0.0", lifespan=lifespan)
 
 # Controllers' routers connection
 app.include_router(user_router)

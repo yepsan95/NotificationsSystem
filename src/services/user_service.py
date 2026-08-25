@@ -3,8 +3,12 @@ from pwdlib import PasswordHash
 from src.models.user_model import User
 from src.schemas.user_schema import UserCreate, UserUpdate
 from src.repositories.user_repository import UserRepository
-from src.services.exceptions import UserNotFoundError, UserInvalidPasswordError, UserEmailAlreadyExistsError, InvalidPaginationError
-
+from src.services.exceptions import (
+    UserNotFoundError,
+    UserInvalidPasswordError,
+    UserEmailAlreadyExistsError,
+    InvalidPaginationError,
+)
 
 password_context = PasswordHash.recommended()
 
@@ -41,11 +45,16 @@ class UserService:
             raise UserInvalidPasswordError("Password length must be >=6 and <= 16.")
         if replace_user.email:
             existing_user_with_same_email = self.repo.get_by_email(replace_user.email)
-            is_same_user = existing_user_with_same_email and existing_user_with_same_email.id == user_id
+            is_same_user = (
+                existing_user_with_same_email
+                and existing_user_with_same_email.id == user_id
+            )
             if existing_user_with_same_email and not is_same_user:
                 raise UserEmailAlreadyExistsError(replace_user.email)
         hashed_password = password_context.hash(replace_user.password)
-        replaced_user = self.repo.replace(user_id, replace_user, hashed_password=hashed_password)
+        replaced_user = self.repo.replace(
+            user_id, replace_user, hashed_password=hashed_password
+        )
         if not replaced_user:
             raise UserNotFoundError(user_id)
         return replaced_user
@@ -58,10 +67,15 @@ class UserService:
             hashed_password = password_context.hash(update_user.password)
         if update_user.email:
             existing_user_with_same_email = self.repo.get_by_email(update_user.email)
-            is_same_user = existing_user_with_same_email and existing_user_with_same_email.id == user_id
+            is_same_user = (
+                existing_user_with_same_email
+                and existing_user_with_same_email.id == user_id
+            )
             if existing_user_with_same_email and not is_same_user:
                 raise UserEmailAlreadyExistsError(update_user.email)
-        updated_user = self.repo.update(user_id, update_user, hashed_password=hashed_password)
+        updated_user = self.repo.update(
+            user_id, update_user, hashed_password=hashed_password
+        )
         if not updated_user:
             raise UserNotFoundError(user_id)
         return updated_user

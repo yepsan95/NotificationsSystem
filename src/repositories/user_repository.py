@@ -10,7 +10,7 @@ from src.schemas.user_schema import UserCreate, UserUpdate
 
 class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
     """Repository layer for entity <User>."""
-    
+
     def __init__(self, db: Session):
         super().__init__(db, User)
 
@@ -34,7 +34,9 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             self.db.rollback()
             self._handle_exception("create", e)
 
-    def replace(self, user_id: UUID, replace_user: UserCreate, hashed_password: str) -> User:
+    def replace(
+        self, user_id: UUID, replace_user: UserCreate, hashed_password: str
+    ) -> User:
         user_to_replace = self.get_by_id(user_id)
         if not user_to_replace:
             return False
@@ -42,7 +44,12 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             replace_user_data = replace_user.model_dump()
             replace_user_data["password_hash"] = hashed_password
             replace_user_data.pop("password", None)
-            statement = update(User).where(User.id == user_id).values(**replace_user_data).returning(User)
+            statement = (
+                update(User)
+                .where(User.id == user_id)
+                .values(**replace_user_data)
+                .returning(User)
+            )
             replaced_user = self.db.scalars(statement).one()
             self.db.commit()
             self.db.refresh(replaced_user)
@@ -51,7 +58,9 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             self.db.rollback()
             self._handle_exception("replace", e)
 
-    def update(self, user_id: UUID, update_user: UserUpdate, hashed_password: str | None = None) -> User:
+    def update(
+        self, user_id: UUID, update_user: UserUpdate, hashed_password: str | None = None
+    ) -> User:
         user_to_update = self.get_by_id(user_id)
         if not user_to_update:
             return False
@@ -60,7 +69,12 @@ class UserRepository(BaseRepository[User, UserCreate, UserUpdate]):
             if hashed_password:
                 update_user_data["password_hash"] = hashed_password
             update_user_data.pop("password", None)
-            statement = update(User).where(User.id == user_id).values(**update_user_data).returning(User)
+            statement = (
+                update(User)
+                .where(User.id == user_id)
+                .values(**update_user_data)
+                .returning(User)
+            )
             updated_user = self.db.scalars(statement).one()
             self.db.commit()
             self.db.refresh(updated_user)

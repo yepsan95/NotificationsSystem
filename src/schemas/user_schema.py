@@ -4,7 +4,7 @@ from src.schemas.base_schema import BaseResponse
 
 class UserResponse(BaseResponse):
     """Response model for <User> endpoints."""
-    
+
     first_name: str
     middle_name: str | None = None
     last_name: str

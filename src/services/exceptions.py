@@ -15,7 +15,9 @@ class UserInvalidPasswordError(Exception):
 class UserEmailAlreadyExistsError(Exception):
     def __init__(self, email: str):
         self.email = email
-        super().__init__(self, f"Email '{self.email}' is already taken by another user.")
+        super().__init__(
+            self, f"Email '{self.email}' is already taken by another user."
+        )
 
 
 class InvalidPaginationError(Exception):

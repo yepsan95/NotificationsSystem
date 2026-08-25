@@ -22,21 +22,19 @@ class BaseDatabaseClient(ABC):
         actual_db_name = path.lstrip("/")
 
         safe_url = f"{scheme}://{username}@{hostname}:{port}{path}"
-        
-        self.engine = create_engine(
-            database_url,
-            pool_pre_ping=True
-        )
+
+        self.engine = create_engine(database_url, pool_pre_ping=True)
 
         self.SessionLocal = sessionmaker(
-            autocommit=False,
-            autoflush=False,
-            bind=self.engine
+            autocommit=False, autoflush=False, bind=self.engine
         )
 
     def get_db(self):
         # Check if the test database client is trying to access the real database by mistake
-        if self.current_class_name in ["BaseDatabaseClient", "RealDatabaseClient"] and self.is_running_tests:
+        if (
+            self.current_class_name in ["BaseDatabaseClient", "RealDatabaseClient"]
+            and self.is_running_tests
+        ):
             raise RuntimeError(
                 f"CRITICAL DATABASE SAFETY VIOLATION:"
                 f"{self.current_class_name} attempted to access the real database during a test suite run."

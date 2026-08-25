@@ -8,7 +8,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.models.base_model import Base
 from src.services.exceptions import DatabaseConnectionError
 
-
 # Initialize logger for error logs
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 method_name,
                 model_name,
                 exception,
-                exc_info=True
+                exc_info=True,
             )
             raise DatabaseConnectionError("Lost connection with database.")
 
@@ -71,7 +70,12 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             return False
         try:
             replace_obj_dict = replace_obj.model_dump()
-            statement = update(self.model).where(self.model.id == id).values(**replace_obj_dict).returning(self.model)
+            statement = (
+                update(self.model)
+                .where(self.model.id == id)
+                .values(**replace_obj_dict)
+                .returning(self.model)
+            )
             replaced_obj = self.db.scalars(statement).one()
             self.db.commit()
             self.db.refresh(replaced_obj)
@@ -86,7 +90,12 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             return False
         try:
             update_obj_dict = update_obj.model_dump(exclude_unset=True)
-            statement = update(self.model).where(self.model.id == id).values(**update_obj_dict).returning(self.model)
+            statement = (
+                update(self.model)
+                .where(self.model.id == id)
+                .values(**update_obj_dict)
+                .returning(self.model)
+            )
             updated_obj = self.db.scalars(statement).one()
             self.db.commit()
             self.db.refresh(updated_obj)
