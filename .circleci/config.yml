@@ -1,0 +1,77 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@3.0.0
+  coveralls: coveralls/coveralls@2.2.5
+
+jobs:
+  lint-and-format:
+    executor: python/default
+    steps:
+      - checkout
+      - run:
+          name: Activate virtual environment
+          command: |
+            python -m venv .venv
+            . .venv/bin/activate
+      - run:
+          name: Upgrade pip
+          command: |
+            python -m pip install --upgrade pip
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Run linter (Flake8)
+          command: |
+            pip install flake8
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      - run:
+          name: Verify code formatting (Black)
+          command: |
+            pip install black
+            black --check .
+
+  run-tests:
+    docker:
+      - image: cimg/python:3.10
+        environment:
+          DB_HOST: 0.0.0.0
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: notifications_db
+          DB_SYNC: true
+
+      - image: cimg/postgres:15.0
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: notifications_db
+
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+      - run:
+          name: Run tests with Pytest
+          command: |
+            pytest -v tests/e2e
+      - run:
+          name: Generate coverage
+          command: |
+            pip install pytest-cov
+            pytest -v --cov=. --cov-report=lcov
+      - coveralls/upload:
+          coverage_file: ./coverage.lcov
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+
+workflows:
+  ci-pipeline:
+    jobs:
+      - lint-and-format
+      - run-tests:
+          requires:
+            - lint-and-format
