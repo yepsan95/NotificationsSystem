@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from src.database.init_db import init_database
-from src.controllers.user_controller import router as user_router
+from src.controllers.api import api_router
 
 
 # This decorator converts an asynchronous function into a context manager function
@@ -25,4 +25,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Notifications System API", version="1.0.0", lifespan=lifespan)
 
 # Controllers' routers connection
-app.include_router(user_router)
+app.include_router(api_router)

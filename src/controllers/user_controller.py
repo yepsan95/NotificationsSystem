@@ -14,7 +14,7 @@ from src.schemas.user_schema import UserResponse, UserCreate, UserUpdate
 from src.database.real_database import get_db
 from src.controllers.dependencies import PaginationParams
 
-router = APIRouter(prefix="/api/v1/users", tags=["Users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/", response_model=list[UserResponse])
