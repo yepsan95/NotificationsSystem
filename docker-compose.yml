@@ -1,8 +1,12 @@
 services:
 
   api:
+    container_name: notifications-system-api
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_started
+      test_postgres_db:
+        condition: service_started
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,6 +20,12 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+      TEST_DB_USER: ${TEST_DB_USER}
+      TEST_DB_PASSWORD: ${TEST_DB_PASSWORD}
+      TEST_DB_HOST: ${TEST_DB_HOST}
+      TEST_DB_PORT: ${TEST_DB_PORT}
+      TEST_DB_NAME: ${TEST_DB_NAME}
+      TEST_DB_DOCKER_CONTAINER: ${TEST_DB_DOCKER_CONTAINER}
       WATCHFILES_FORCE_POLLING: "true"
     restart: unless-stopped
 
@@ -27,7 +37,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "${DB_PORT}:5432"
+      - "${HOST_DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -39,7 +49,7 @@ services:
       POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
       POSTGRES_DB: ${TEST_DB_NAME}
     ports:
-      - "${TEST_DB_PORT}:5432"
+      - "${TEST_HOST_DB_PORT}:5432"
 
 volumes:
   postgres_data:
