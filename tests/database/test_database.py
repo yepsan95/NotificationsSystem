@@ -24,8 +24,8 @@ class TestDatabaseClient(BaseDatabaseClient):
 
         if not (is_localhost or is_docker_container) or not has_test_keyword:
             raise ValueError(
-                f"CRITICAL DATABASE SAFETY VIOLATION:"
-                f"{self.current_class_name} was attempted to initialize during a test suite run with a non-test database URL."
+                f"CRITICAL DATABASE SAFETY VIOLATION: "
+                f"{self.__class__.__name__} was attempted to initialize during a test suite run with a non-test database URL. "
                 f"Execution halted."
             )
 
