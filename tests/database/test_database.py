@@ -8,6 +8,7 @@ class TestDatabaseClient(BaseDatabaseClient):
     """Test database client class. This client will be used exclusively for testing."""
 
     def __init__(self, database_url: str, container_names=[]):
+        self.current_class_name = self.__class__.__name__
         parsed_url = urlparse(database_url)
         hostname = parsed_url.hostname
         actual_db_name = parsed_url.path.lstrip("/")
@@ -25,7 +26,7 @@ class TestDatabaseClient(BaseDatabaseClient):
         if not (is_localhost or is_docker_container) or not has_test_keyword:
             raise ValueError(
                 f"CRITICAL DATABASE SAFETY VIOLATION: "
-                f"{self.__class__.__name__} was attempted to initialize during a test suite run with a non-test database URL. "
+                f"{self.current_class_name} was attempted to initialize during a test suite run with a non-test database URL. "
                 f"Execution halted."
             )
 

@@ -44,6 +44,9 @@ Bryan Yep Valencia
 - Docker compose installed without SUDO
 - Ports 3000, 5432 and 5433 free
 
+### For Running Tests And Migrations
+- Make installed
+
 ## Environment Variables
 Copy the variables from `.env.example` to a new `.env` file and set their values.
 
@@ -60,7 +63,17 @@ docker compose down
 ## How To Run The Tests
 While the app is running:
 ```
-docker exec -i notifications-system-api pytest -v /code/tests/e2e
+make run-tests
+```
+
+## How To Run Migrations On Real Database
+```
+make db-migrate
+```
+
+## How To Run Migrations On Test Database
+```
+make db-migrate-test
 ```
 
 ## Standards Applied

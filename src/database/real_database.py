@@ -22,7 +22,7 @@ REAL_DATABASE_URL = (
     f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
-# Instatiate database client
+# Instantiate database client
 real_client = RealDatabaseClient(REAL_DATABASE_URL)
 
 # Store database engine

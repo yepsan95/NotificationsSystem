@@ -54,6 +54,10 @@ jobs:
           command: |
             dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
       - run:
+          name: Run Alembic migrations
+          command: |
+            alembic upgrade head
+      - run:
           name: Run tests with Pytest
           command: |
             pip install pytest pytest-cov
