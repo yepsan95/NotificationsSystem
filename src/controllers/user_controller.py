@@ -1,18 +1,20 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, status, HTTPException, Response
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-from src.services.user_service import UserService
-from src.services.exceptions import (
-    UserNotFoundError,
-    UserInvalidPasswordError,
-    UserEmailAlreadyExistsError,
-    InvalidPaginationError,
-    DatabaseConnectionError,
-)
-from src.repositories.user_repository import UserRepository
-from src.schemas.user_schema import UserResponse, UserCreate, UserUpdate
-from src.database.real_database import get_db
+
 from src.controllers.dependencies import PaginationParams
+from src.database.real_database import get_db
+from src.repositories.user_repository import UserRepository
+from src.schemas.user_schema import UserCreate, UserResponse, UserUpdate
+from src.services.exceptions import (
+    DatabaseConnectionError,
+    InvalidPaginationError,
+    UserEmailAlreadyExistsError,
+    UserInvalidPasswordError,
+    UserNotFoundError,
+)
+from src.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

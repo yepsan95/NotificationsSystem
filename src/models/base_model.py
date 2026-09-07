@@ -1,9 +1,11 @@
+import uuid
 from datetime import datetime
 from typing import Annotated
-import uuid
-from sqlalchemy import func, text, inspect
+
+from sqlalchemy import func, inspect, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
 from src.models.db_types import id_pk, timestamp_created, timestamp_updated
 
 

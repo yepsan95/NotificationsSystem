@@ -1,6 +1,8 @@
 import sys
-from sqlalchemy_utils import database_exists, create_database
-from src.database.real_database import db_engine, REAL_DATABASE_URL
+
+from sqlalchemy_utils import create_database, database_exists
+
+from src.database.real_database import REAL_DATABASE_URL, db_engine
 from src.models.base_model import Base
 from src.models.user_model import User
 
@@ -14,8 +16,10 @@ def init_database():
 
     if is_running_tests:
         from tests.database.test_database import (
-            db_engine as test_db_engine,
             TEST_DATABASE_URL,
+        )
+        from tests.database.test_database import (
+            db_engine as test_db_engine,
         )
 
         current_url = TEST_DATABASE_URL

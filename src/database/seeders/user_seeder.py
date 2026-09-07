@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from src.models.user_model import User
+
 from src.database.factories.user_factory import UserFactory
+from src.models.user_model import User
 
 
 def run_user_seeder(db: Session, count: int) -> None:

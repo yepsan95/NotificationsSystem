@@ -1,10 +1,12 @@
 import logging
-from typing import Generic, TypeVar, Sequence
+from typing import Generic, Sequence, TypeVar
 from uuid import UUID
+
 from pydantic import BaseModel
 from sqlalchemy import select, update
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
 from src.models.base_model import Base
 from src.services.exceptions import DatabaseConnectionError
 

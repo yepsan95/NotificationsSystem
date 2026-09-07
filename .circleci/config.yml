@@ -12,15 +12,14 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
       - run:
-          name: Run linter (Flake8)
+          name: Run linter (Ruff)
           command: |
-            pip install flake8
-            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+            pip install ruff
+            ruff check . --select=E9,F63,F7,F82,I
       - run:
-          name: Verify code formatting (Black)
+          name: Verify code formatting (Ruff)
           command: |
-            pip install black
-            black --check .
+            ruff format --check .
 
   run-tests:
     docker:

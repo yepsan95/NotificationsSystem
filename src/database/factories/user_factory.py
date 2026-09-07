@@ -1,6 +1,7 @@
 import factory
 from faker import Factory as FakerFactory
 from pwdlib import PasswordHash
+
 from src.models.user_model import User
 
 password_context = PasswordHash.recommended()

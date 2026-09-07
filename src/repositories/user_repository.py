@@ -1,10 +1,12 @@
 import logging
 from uuid import UUID
+
 from sqlalchemy import select, update
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from src.repositories.base_repository import BaseRepository
+from sqlalchemy.orm import Session
+
 from src.models.user_model import User
+from src.repositories.base_repository import BaseRepository
 from src.schemas.user_schema import UserCreate, UserUpdate
 
 

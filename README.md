@@ -87,8 +87,7 @@ make db-users-seed COUNT=20
 ```
 
 ## Standards Applied
+- Ruff
 - PEP8
-- PEP257
-- Appnexus
-- Flake8
-- Black formatting
+- Isort
+- POSIX Compliant Files

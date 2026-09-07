@@ -1,6 +1,7 @@
 import sys
 from abc import ABC
 from urllib.parse import urlparse
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

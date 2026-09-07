@@ -1,13 +1,15 @@
 from uuid import UUID
+
 from pwdlib import PasswordHash
+
 from src.models.user_model import User
-from src.schemas.user_schema import UserCreate, UserUpdate
 from src.repositories.user_repository import UserRepository
+from src.schemas.user_schema import UserCreate, UserUpdate
 from src.services.exceptions import (
-    UserNotFoundError,
-    UserInvalidPasswordError,
-    UserEmailAlreadyExistsError,
     InvalidPaginationError,
+    UserEmailAlreadyExistsError,
+    UserInvalidPasswordError,
+    UserNotFoundError,
 )
 
 password_context = PasswordHash.recommended()

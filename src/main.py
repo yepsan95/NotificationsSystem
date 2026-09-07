@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from src.database.init_db import init_database
+
 from src.controllers.api import api_router
+from src.database.init_db import init_database
 
 
 # This decorator converts an asynchronous function into a context manager function

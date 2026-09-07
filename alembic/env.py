@@ -1,13 +1,11 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
+from src.database.real_database import REAL_DATABASE_URL
 from src.models.base_model import Base
 from src.models.user_model import User
-from src.database.real_database import REAL_DATABASE_URL
 from tests.database.test_database import TEST_DATABASE_URL
 
 # this is the Alembic Config object, which provides

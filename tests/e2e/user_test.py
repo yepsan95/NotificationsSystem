@@ -1,13 +1,15 @@
-import pytest
 import uuid
+
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
+
+from src.database.real_database import get_db
+from src.main import app
 from src.models.base_model import Base
 from src.models.user_model import User
 from src.services.user_service import password_context
-from src.database.real_database import get_db
 from tests.database.test_database import get_db as get_db_test
-from src.main import app
 
 
 @pytest.fixture(scope="module", autouse=True)

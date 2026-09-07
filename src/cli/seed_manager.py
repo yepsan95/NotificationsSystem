@@ -1,6 +1,8 @@
 import sys
+
 import typer
 from sqlalchemy.exc import SQLAlchemyError
+
 from src.database.real_database import get_db
 from src.database.seeders.user_seeder import run_user_seeder
 
