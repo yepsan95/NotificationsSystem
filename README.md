@@ -76,6 +76,16 @@ make db-migrate
 make db-migrate-test
 ```
 
+## How To Seed The Database With Mock Data
+```
+make db-users-seed
+```
+The seeder will create 50 users by default.
+If you want a different number of users to be created, use the COUNT parameter:
+```
+make db-users-seed COUNT=20
+```
+
 ## Standards Applied
 - PEP8
 - PEP257
