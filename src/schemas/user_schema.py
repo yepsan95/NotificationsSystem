@@ -4,7 +4,7 @@ from src.schemas.base_schema import BaseResponse
 
 
 class UserResponse(BaseResponse):
-    """Response model for <User> endpoints."""
+    """Response schema for <User> endpoints."""
 
     first_name: str
     middle_name: str | None = None
@@ -13,7 +13,7 @@ class UserResponse(BaseResponse):
 
 
 class UserCreate(BaseModel):
-    """Request model for <User> POST and PUT endpoints."""
+    """Request schema for <User> POST and PUT endpoints."""
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
@@ -25,7 +25,7 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    """Request model for <User> PATCH endpoints."""
+    """Request schema for <User> PATCH endpoints."""
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
