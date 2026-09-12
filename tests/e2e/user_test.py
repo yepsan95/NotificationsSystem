@@ -4,11 +4,11 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from src.core.security import hash_password
 from src.database.real_database import get_db
 from src.main import app
 from src.models.base_model import Base
 from src.models.user_model import User
-from src.services.user_service import password_context
 from tests.database.test_database import get_db as get_db_test
 
 
@@ -97,7 +97,7 @@ def sample_single_user(db_session):
     }
     user_password = "ILoveTux"
 
-    hashed_password = password_context.hash(user_password)
+    hashed_password = hash_password(user_password)
 
     new_user = User(**user_data, password_hash=hashed_password)
 
@@ -256,7 +256,7 @@ def sample_multiple_users(db_session):
 
     users_data = [
         {k: v for k, v in user.items() if k != "password"}
-        | {"password_hash": password_context.hash(user["password"])}
+        | {"password_hash": hash_password(user["password"])}
         for user in users_data
     ]
 
@@ -793,7 +793,7 @@ def test_replace_user_returns_failure_when_email_already_exists(
         "email": "rms@gnu.org",
         "password": "OpenSource",
     }
-    hashed_password = password_context.hash(new_user_data["password"])
+    hashed_password = hash_password(new_user_data["password"])
     new_user_data.pop("password", None)
     new_user = User(**new_user_data, password_hash=hashed_password)
     db_session.add(new_user)
@@ -1101,7 +1101,7 @@ def test_update_user_returns_failure_when_email_already_exists(
         "email": "rms@gnu.org",
         "password": "OpenSource",
     }
-    hashed_password = password_context.hash(new_user_data["password"])
+    hashed_password = hash_password(new_user_data["password"])
     new_user_data.pop("password", None)
     new_user = User(**new_user_data, password_hash=hashed_password)
     db_session.add(new_user)
