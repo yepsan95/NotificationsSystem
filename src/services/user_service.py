@@ -1,7 +1,6 @@
 from uuid import UUID
 
-from pwdlib import PasswordHash
-
+from src.core.security import hash_password
 from src.models.user_model import User
 from src.repositories.user_repository import UserRepository
 from src.schemas.user_schema import UserCreate, UserUpdate
@@ -11,8 +10,6 @@ from src.services.exceptions import (
     UserInvalidPasswordError,
     UserNotFoundError,
 )
-
-password_context = PasswordHash.recommended()
 
 
 class UserService:
@@ -39,7 +36,7 @@ class UserService:
         existing_user_with_same_email = self.repo.get_by_email(new_user.email)
         if existing_user_with_same_email:
             raise UserEmailAlreadyExistsError(new_user.email)
-        hashed_password = password_context.hash(new_user.password)
+        hashed_password = hash_password(new_user.password)
         return self.repo.create(new_user, hashed_password=hashed_password)
 
     def replace(self, user_id: UUID, replace_user: UserCreate) -> User:
@@ -53,7 +50,7 @@ class UserService:
             )
             if existing_user_with_same_email and not is_same_user:
                 raise UserEmailAlreadyExistsError(replace_user.email)
-        hashed_password = password_context.hash(replace_user.password)
+        hashed_password = hash_password(replace_user.password)
         replaced_user = self.repo.replace(
             user_id, replace_user, hashed_password=hashed_password
         )
@@ -66,7 +63,7 @@ class UserService:
         if update_user.password:
             if len(update_user.password) < 6 or len(update_user.password) > 16:
                 raise UserInvalidPasswordError("Password length must be >=6 and <= 16.")
-            hashed_password = password_context.hash(update_user.password)
+            hashed_password = hash_password(update_user.password)
         if update_user.email:
             existing_user_with_same_email = self.repo.get_by_email(update_user.email)
             is_same_user = (
