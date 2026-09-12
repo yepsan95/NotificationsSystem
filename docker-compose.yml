@@ -15,6 +15,7 @@ services:
       - "${API_PORT}:3000"
     volumes:
       - ./src:/code/src
+      - ./alembic:/code/alembic
     environment:
       DB_HOST: postgres_db
       DB_PORT: ${DB_PORT}
@@ -27,6 +28,8 @@ services:
       TEST_DB_PORT: ${TEST_DB_PORT}
       TEST_DB_NAME: ${TEST_DB_NAME}
       TEST_DB_DOCKER_CONTAINER: ${TEST_DB_DOCKER_CONTAINER}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       WATCHFILES_FORCE_POLLING: "true"
     restart: unless-stopped
 
