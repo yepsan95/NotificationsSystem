@@ -1,3 +1,7 @@
+# Create migration with updated models
+db-make-migration:
+	docker exec notifications-system-api alembic revision --autogenerate -m "$(name)"
+
 # Run migrations on real database
 db-migrate:
 	docker exec notifications-system-api alembic upgrade head
