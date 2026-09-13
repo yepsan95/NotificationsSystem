@@ -1,5 +1,6 @@
 import logging
-from typing import Generic, Sequence, TypeVar
+from collections.abc import Sequence
+from typing import Generic, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -36,7 +37,6 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 method_name,
                 model_name,
                 exception,
-                exc_info=True,
             )
             raise DatabaseConnectionError("Lost connection with database.")
 

@@ -50,10 +50,11 @@ def db_session():
         except Exception as e:
             print(f"Error clearing database tables: {e}")
             db.rollback()
+            raise
 
         try:
             next(db_generator)
-        except StopIteration as e:
+        except StopIteration:
             pass
 
 
@@ -369,8 +370,6 @@ def test_get_multi_users_filters(test_http_client, sample_multiple_users):
     - validate users' fields.
     """
 
-    pass
-
 
 def test_get_multi_users_returns_failure_when_database_down(test_http_client):
     """
@@ -378,8 +377,6 @@ def test_get_multi_users_returns_failure_when_database_down(test_http_client):
     Asserts:
     - response includes HTTP status code 500 when database is down.
     """
-
-    pass
 
 
 def test_get_user_by_id_returns_success_and_one_item(

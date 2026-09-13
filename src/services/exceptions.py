@@ -41,10 +41,15 @@ class InvalidRefreshTokenError(Exception):
 class ExpiredRefreshTokenError(Exception):
     def __init__(self, message: str):
         self.message = message
-        super().__init__(self, "Refresh token's expiration date has passed. " + self.message)
+        super().__init__(
+            self, "Refresh token's expiration date has passed. " + self.message
+        )
 
 
 class CompromisedSessionError(Exception):
     def __init__(self, user_id: UUID):
         self.user_id = user_id
-        super().__init__(self, f"Compromised session. All tokens must be revoked for user with id '{user_id}'.")
+        super().__init__(
+            self,
+            f"Compromised session. All tokens must be revoked for user with id '{user_id}'.",
+        )
