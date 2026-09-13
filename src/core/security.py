@@ -1,7 +1,6 @@
 import os
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Any, Union
 
 import jwt
 from pwdlib import PasswordHash
@@ -23,6 +22,7 @@ def hash_password(password: str) -> str:
 
     return password_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verify plain against hashed password.
@@ -30,15 +30,19 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
     return password_context.verify(plain_password, hashed_password)
 
+
 def create_access_token(subject: str) -> str:
     """
     Creates JWT Access Token with assymetric encryption RS256 using private key.
     """
 
-    expiration_unix_timestamp = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRATION_TIME_IN_MINUTES)
+    expiration_unix_timestamp = datetime.now(timezone.utc) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRATION_TIME_IN_MINUTES
+    )
     to_encode = {"exp": expiration_unix_timestamp, "sub": subject}
 
     return jwt.encode(to_encode, PRIVATE_KEY, algorithm=ALGORITHM)
+
 
 def decode_access_token(token: str) -> dict:
     """
@@ -46,6 +50,7 @@ def decode_access_token(token: str) -> dict:
     """
 
     return jwt.decode(token, PUBLIC_KEY, algorithms=[ALGORITHM])
+
 
 def generate_refresh_token() -> str:
     """

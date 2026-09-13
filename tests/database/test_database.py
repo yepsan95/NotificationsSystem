@@ -9,8 +9,9 @@ from src.database.base_database import BaseDatabaseClient
 class TestDatabaseClient(BaseDatabaseClient):
     """Test database client class. This client will be used exclusively for testing."""
 
-    def __init__(self, database_url: str, container_names=[]):
+    def __init__(self, database_url: str, container_names: list[str] | None = None):
         self.current_class_name = self.__class__.__name__
+        self.container_names = container_names or []
         parsed_url = urlparse(database_url)
         hostname = parsed_url.hostname
         actual_db_name = parsed_url.path.lstrip("/")
@@ -22,7 +23,7 @@ class TestDatabaseClient(BaseDatabaseClient):
         # the database hostname will be the name of the container.
 
         is_localhost = hostname in ["localhost", "127.0.0.1"]
-        is_docker_container = hostname in [*container_names, "0.0.0.0"]
+        is_docker_container = hostname in [*self.container_names, "0.0.0.0"]
         has_test_keyword = "test" in actual_db_name.lower()
 
         if not (is_localhost or is_docker_container) or not has_test_keyword:
@@ -32,7 +33,7 @@ class TestDatabaseClient(BaseDatabaseClient):
                 f"Execution halted."
             )
 
-        super().__init__(database_url, container_names)
+        super().__init__(database_url, self.container_names)
 
 
 # Loads variables from the .env file to Python's memory

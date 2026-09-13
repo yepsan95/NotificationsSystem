@@ -1,6 +1,5 @@
 import sys
 from abc import ABC
-from urllib.parse import urlparse
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -9,20 +8,10 @@ from sqlalchemy.orm import sessionmaker
 class BaseDatabaseClient(ABC):
     """Base database client abstract class. Will be inherited by all other database clients."""
 
-    def __init__(self, database_url: str, container_names=[]):
+    def __init__(self, database_url: str, container_names: list[str] | None = None):
         self.current_class_name = self.__class__.__name__
-        self.container_names = container_names
+        self.container_names = container_names or []
         self.is_running_tests = "pytest" in sys.modules
-
-        parsed_url = urlparse(database_url)
-        scheme = parsed_url.scheme
-        username = parsed_url.username
-        hostname = parsed_url.hostname
-        port = parsed_url.port
-        path = parsed_url.path
-        actual_db_name = path.lstrip("/")
-
-        safe_url = f"{scheme}://{username}@{hostname}:{port}{path}"
 
         self.engine = create_engine(database_url, pool_pre_ping=True)
 

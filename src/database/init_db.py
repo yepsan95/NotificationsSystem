@@ -4,7 +4,6 @@ from sqlalchemy_utils import create_database, database_exists
 
 from src.database.real_database import REAL_DATABASE_URL, db_engine
 from src.models.base_model import Base
-from src.models.user_model import User
 
 
 def init_database():
@@ -40,4 +39,4 @@ def init_database():
 
     except Exception as e:
         print(f"Error during database initialization: {e}")
-        raise e
+        raise

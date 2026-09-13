@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy import select, update
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -9,13 +7,15 @@ from src.repositories.base_repository import BaseRepository
 from src.schemas.auth_schema import RefreshTokenCreate, RefreshTokenUpdate
 
 
-class RefreshTokenRepository(BaseRepository[RefreshToken, RefreshTokenCreate, RefreshTokenUpdate]):
+class RefreshTokenRepository(
+    BaseRepository[RefreshToken, RefreshTokenCreate, RefreshTokenUpdate]
+):
     """Repository layer for entity <RefreshToken>."""
 
     def __init__(self, db: Session):
         super().__init__(db, RefreshToken)
 
-    def get_by_token(self, token: str) -> Optional[RefreshToken]:
+    def get_by_token(self, token: str) -> RefreshToken | None:
         try:
             statement = select(RefreshToken).where(RefreshToken.token == token)
             return self.db.scalars(statement).first()
@@ -28,8 +28,7 @@ class RefreshTokenRepository(BaseRepository[RefreshToken, RefreshTokenCreate, Re
             statement = (
                 update(RefreshToken)
                 .where(
-                    RefreshToken.user_id == user_id,
-                    RefreshToken.is_revoked == False
+                    RefreshToken.user_id == user_id, RefreshToken.is_revoked == False
                 )
                 .values(update_obj)
                 .returning(RefreshToken)

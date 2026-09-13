@@ -4,7 +4,7 @@ from typing import Annotated
 
 from sqlalchemy import func, text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import mapped_column
 
 # Column Types for PostgreSQL
 id_pk = Annotated[
