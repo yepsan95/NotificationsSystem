@@ -86,6 +86,50 @@ If you want a different number of users to be created, use the COUNT parameter:
 make db-users-seed COUNT=20
 ```
 
+## Development Instructions
+### Environment setup
+1. Create virtual environment:
+```
+python -m venv .venv
+```
+
+2. Activate virtual environment:
+
+- Linux/MacOS
+```
+source .venv/bin/activate
+```
+
+- Windows
+
+  - CMD
+  ```
+  .venv\Scripts\activate
+  ```
+  - PowerShell
+  ```
+  .venv\Scripts\Activate.ps1
+  ```
+
+3. Install dependencies:
+```
+pip install -r requirements-dev.txt
+```
+
+4. Install pre-commit hooks:
+```
+pre-commit install
+```
+### Seed Database
+> **_COUNT:_** The amount of users to generate
+```
+make db-seed-users COUNT=50
+```
+### Generate New Migration
+```
+make db-make-migration name="migration name"
+```
+
 ## Standards Applied
 - Ruff
 - PEP8
