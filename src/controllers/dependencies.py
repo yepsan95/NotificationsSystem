@@ -14,4 +14,4 @@ class PaginationParams(BaseModel):
 
 DbDependency = Annotated[Session, Depends(get_db)]
 PaginationDependency = Annotated[PaginationParams, Depends()]
-RefreshTokenDependency = Annotated[str | None, Cookie()]
+RefreshTokenDependency = Annotated[str | None, Cookie(alias="refresh_token")]

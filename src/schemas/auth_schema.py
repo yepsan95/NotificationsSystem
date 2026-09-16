@@ -20,9 +20,9 @@ class RefreshTokenUpdate(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    token: str | None
-    user_id: UUID | None
-    expires_at: datetime | None
+    token: str | None = None
+    user_id: UUID | None = None
+    expires_at: datetime | None = None
     is_revoked: bool | None = Field(default=False)
 
 

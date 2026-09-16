@@ -38,15 +38,17 @@ class RefreshTokenService:
         if db_token.is_revoked:
             self.repo.revoke_all_user_tokens(db_token.user_id)
             raise CompromisedSessionError(user_id=db_token.user_id)
-        if db_token.expires_at < datetime.now(tz=UTC):
+        if db_token.expires_at < datetime.now(tz=UTC).replace(tzinfo=None):
             raise ExpiredRefreshTokenError("Token must be revoked.")
+        db_token_id = str(db_token.id)
         refresh_token_update_schema = RefreshTokenUpdate(is_revoked=True)
-        self.repo.update(db_token, refresh_token_update_schema)
-        return db_token.user_id
+        self.repo.update(db_token_id, refresh_token_update_schema)
+        return str(db_token.user_id)
 
     def revoke_token(self, token: str) -> None:
         db_token = self.repo.get_by_token(token)
         if not db_token:
             raise InvalidRefreshTokenError("Cannot be revoked.")
+        db_token_id = db_token.id
         refresh_token_update_schema = RefreshTokenUpdate(is_revoked=True)
-        self.repo.update(db_token, refresh_token_update_schema)
+        self.repo.update(db_token_id, refresh_token_update_schema)

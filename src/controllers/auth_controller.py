@@ -60,7 +60,7 @@ def login(
     "/refresh", response_model=AuthMessageResponse, status_code=status.HTTP_200_OK
 )
 def refresh_session(
-    response: Response, refresh_token: RefreshTokenDependency, db: DbDependency
+    response: Response, db: DbDependency, refresh_token: RefreshTokenDependency = None
 ) -> AuthMessageResponse:
     if not refresh_token:
         raise HTTPException(
@@ -102,7 +102,7 @@ def refresh_session(
     "/logout", response_model=AuthMessageResponse, status_code=status.HTTP_200_OK
 )
 def logout(
-    response: Response, refresh_token: RefreshTokenDependency, db: DbDependency
+    response: Response, db: DbDependency, refresh_token: RefreshTokenDependency = None
 ) -> AuthMessageResponse:
     if refresh_token:
         refresh_token_repo = RefreshTokenRepository(db)
