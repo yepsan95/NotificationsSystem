@@ -53,6 +53,11 @@ jobs:
           command: |
             dockerize -wait tcp://127.0.0.1:5432 -timeout 1m
       - run:
+          name: Decode JWT Keys from Base64 and export to Shell Environment
+          command: |
+            echo "export JWT_PRIVATE_KEY=\"$(echo $JWT_PRIVATE_KEY_BASE64 | base64 -d)\"" >> $BASH_ENV
+            echo "export JWT_PUBLIC_KEY=\"$(echo $JWT_PUBLIC_KEY_BASE64 | base64 -d)\"" >> $BASH_ENV
+      - run:
           name: Run Alembic migrations
           command: |
             alembic upgrade head
