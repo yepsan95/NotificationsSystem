@@ -19,3 +19,8 @@ class Base(DeclarativeBase):
         obj_dict["created_at"] = self.created_at.isoformat()
         obj_dict["updated_at"] = self.updated_at.isoformat()
         return obj_dict
+
+
+from src.models.notification_model import Notification  # noqa: F401
+from src.models.refresh_token_model import RefreshToken  # noqa: F401
+from src.models.user_model import User  # noqa: F401
