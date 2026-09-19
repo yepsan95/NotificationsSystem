@@ -28,7 +28,7 @@ class NotificationCreate(BaseModel):
         ..., min_length=1, description="Body content of the notification."
     )
     channel: NotificationChannel = Field(
-        ..., description="DElivery channel (EMAIL, SMS, PUSH)."
+        ..., description="Delivery channel (EMAIL, SMS, PUSH)."
     )
 
 
