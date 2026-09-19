@@ -53,3 +53,8 @@ class CompromisedSessionError(Exception):
             self,
             f"Compromised session. All tokens must be revoked for user with id '{user_id}'.",
         )
+
+
+class NotificationNotFoundError(Exception):
+    def __init__(self, notification_id: UUID):
+        super().__init__(self, f"Notification with id {notification_id} not found.")
