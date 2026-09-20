@@ -99,8 +99,41 @@ def sample_single_user(db_session, sample_user_password):
         "middle_name": "Benedict",
         "last_name": "Torvalds",
         "email": "linus@linuxfoundation.org",
+        "phone_number": "+1234567890",
+        "device_token": "mock_firebase_device_token_xyz_123",
     }
     user_password = sample_user_password
+
+    hashed_password = hash_password(user_password)
+
+    new_user = User(**user_data, password_hash=hashed_password)
+
+    db_session.add(new_user)
+    db_session.commit()
+
+    return new_user
+
+
+@pytest.fixture
+def sample_secondary_password():
+    """Fixture that returns a sample user's password."""
+
+    return "FREEdom"
+
+
+@pytest.fixture
+def sample_secondary_user(db_session, sample_secondary_password):
+    """Fixture that creates a single sample user before the test."""
+
+    user_data = {
+        "first_name": "Richard",
+        "middle_name": "Matthew",
+        "last_name": "Stallman",
+        "email": "rms@gnu.org",
+        "phone_number": "+9876543210",
+        "device_token": "mock_firebase_device_token_abc_456",
+    }
+    user_password = sample_secondary_password
 
     hashed_password = hash_password(user_password)
 
@@ -275,3 +308,18 @@ def sample_multiple_users(db_session):
     db_session.commit()
 
     return users_data
+
+
+@pytest.fixture
+def auth_user_and_cookie(
+    db_session, test_http_client, sample_single_user, sample_user_password
+):
+    """Fixture that logs a user in."""
+
+    login_payload = {
+        "email": sample_single_user.get_safe_attributes()["email"],
+        "password": sample_user_password,
+    }
+    test_http_client.post("https://testserver/api/v1/auth/login", json=login_payload)
+
+    return sample_single_user
