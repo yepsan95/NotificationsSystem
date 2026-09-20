@@ -81,6 +81,33 @@ def create_and_send_notification(
         )
 
 
+@router.put(
+    "/{notification_id}",
+    response_model=NotificationResponse,
+    status_code=status.HTTP_200_OK,
+)
+def replace_notification(
+    notification_id: UUID,
+    replace_notification: NotificationCreate,
+    db: DbDependency,
+    current_user: CurrentUserDependency,
+) -> NotificationResponse:
+    notification_repo = NotificationRepository(db)
+    user_repo = UserRepository(db)
+    notification_service = NotificationService(notification_repo, user_repo)
+    try:
+        current_user_id = str(current_user.id)
+        return notification_service.replace_by_user(
+            notification_id, current_user_id, replace_notification
+        )
+    except NotificationNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except DatabaseConnectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
+
+
 @router.patch(
     "/{notification_id}",
     response_model=NotificationResponse,

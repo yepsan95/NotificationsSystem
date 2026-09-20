@@ -143,6 +143,48 @@ def test_create_sms_notification_sets_failed_status_when_content_exceeds_charact
     assert data["user_id"] == auth_user_and_cookie.get_safe_attributes()["id"]
 
 
+def test_replace_notification_returns_success_and_replaced_item(
+    db_session, test_http_client, auth_user_and_cookie
+):
+    """
+    Tests PUT /notifications/{notification_id} endpoint.
+    Asserts:
+    - response includes HTTP status code 200.
+    - response returns replaced notification.
+    - validate replaced notification's fields.
+    """
+
+    notification = Notification(
+        user_id=auth_user_and_cookie.get_safe_attributes()["id"],
+        title="Old title",
+        content="Old content",
+        channel=NotificationChannel.EMAIL,
+        status=NotificationStatus.SENT,
+    )
+    db_session.add(notification)
+    db_session.commit()
+    db_session.refresh(notification)
+
+    replace_payload = {
+        "title": "New title",
+        "content": "New content",
+        "channel": NotificationChannel.PUSH,
+    }
+
+    response = test_http_client.put(
+        f"https://testserver/api/v1/notifications/{notification.id!s}",
+        json=replace_payload,
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    replaced_notification_data = response.json()
+
+    assert all(
+        replaced_notification_data.get(k) == v for k, v in replace_payload.items()
+    )
+    assert replaced_notification_data["user_id"] == str(notification.user_id)
+
+
 def test_update_notification_returns_success_and_updated_item(
     db_session, test_http_client, auth_user_and_cookie
 ):
@@ -167,11 +209,11 @@ def test_update_notification_returns_success_and_updated_item(
 
     updated_title = "Updated Title Successfully"
 
-    patch_payload = {"title": updated_title}
+    update_payload = {"title": updated_title}
 
     response = test_http_client.patch(
         f"https://testserver/api/v1/notifications/{notification.id!s}",
-        json=patch_payload,
+        json=update_payload,
     )
     assert response.status_code == status.HTTP_200_OK
 

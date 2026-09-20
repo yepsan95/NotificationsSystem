@@ -59,6 +59,17 @@ class NotificationService:
         updated_notification = self.repo.update(str(db_notification.id), update_schema)
         return updated_notification
 
+    def replace_by_user(
+        self, notification_id: UUID, user_id: UUID, replace_schema: NotificationCreate
+    ) -> Notification:
+        notification = self.get_by_id_and_user(notification_id, user_id)
+        if not notification:
+            raise NotificationNotFoundError(notification_id)
+        replaced_notification = self.repo.replace(notification_id, replace_schema)
+        if not replaced_notification:
+            raise NotificationNotFoundError(notification_id)
+        return replaced_notification
+
     def update_by_user(
         self, notification_id: UUID, user_id: UUID, update_schema: NotificationUpdate
     ) -> Notification:
