@@ -34,7 +34,7 @@ class NotificationService:
 
     def get_by_id_and_user(self, notification_id: UUID, user_id: UUID) -> Notification:
         notification = self.repo.get_by_id(notification_id)
-        if not notification or notification.user_id != user_id:
+        if not notification or str(notification.user_id) != user_id:
             raise NotificationNotFoundError(notification_id)
         return notification
 
@@ -57,6 +57,17 @@ class NotificationService:
             final_status = NotificationStatus.FAILED
         update_schema = NotificationUpdate(status=final_status)
         updated_notification = self.repo.update(str(db_notification.id), update_schema)
+        return updated_notification
+
+    def update_by_user(
+        self, notification_id: UUID, user_id: UUID, update_schema: NotificationUpdate
+    ) -> Notification:
+        notification = self.get_by_id_and_user(notification_id, user_id)
+        if not notification:
+            raise NotificationNotFoundError(notification_id)
+        updated_notification = self.repo.update(notification_id, update_schema)
+        if not updated_notification:
+            raise NotificationNotFoundError(notification_id)
         return updated_notification
 
     def delete_by_user(self, notification_id: UUID, user_id: UUID) -> bool:

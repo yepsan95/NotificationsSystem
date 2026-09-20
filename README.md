@@ -12,6 +12,7 @@ Allows each user to manage and send notifications through different channels.
 - Create new Notification
 - Get Notifications list
 - Get Notification by id
+- Update Notification
 - Delete Notification
 - Log User In
 - Refresh User Session

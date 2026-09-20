@@ -9,7 +9,11 @@ from src.controllers.dependencies import (
 )
 from src.repositories.notification_repository import NotificationRepository
 from src.repositories.user_repository import UserRepository
-from src.schemas.notification_schema import NotificationCreate, NotificationResponse
+from src.schemas.notification_schema import (
+    NotificationCreate,
+    NotificationResponse,
+    NotificationUpdate,
+)
 from src.services.exceptions import (
     DatabaseConnectionError,
     InvalidPaginationError,
@@ -41,6 +45,21 @@ def get_user_notifications(
         )
 
 
+@router.get("/{notification_id}", response_model=NotificationResponse)
+def get_notification_by_id(
+    notification_id: UUID, db: DbDependency, current_user: CurrentUserDependency
+) -> NotificationResponse:
+    notification_repo = NotificationRepository(db)
+    user_repo = UserRepository(db)
+    notification_service = NotificationService(notification_repo, user_repo)
+    try:
+        return notification_service.get_by_id_and_user(
+            notification_id, str(current_user.id)
+        )
+    except NotificationNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
 @router.post(
     "/", response_model=NotificationResponse, status_code=status.HTTP_201_CREATED
 )
@@ -62,19 +81,31 @@ def create_and_send_notification(
         )
 
 
-@router.get("/{notification_id}", response_model=NotificationResponse)
-def get_notification_by_id(
-    notification_id: UUID, db: DbDependency, current_user: CurrentUserDependency
+@router.patch(
+    "/{notification_id}",
+    response_model=NotificationResponse,
+    status_code=status.HTTP_200_OK,
+)
+def update_notification(
+    notification_id: UUID,
+    update_notification: NotificationUpdate,
+    db: DbDependency,
+    current_user: CurrentUserDependency,
 ) -> NotificationResponse:
     notification_repo = NotificationRepository(db)
     user_repo = UserRepository(db)
     notification_service = NotificationService(notification_repo, user_repo)
     try:
-        return notification_service.get_by_id_and_user(
-            notification_id, str(current_user.id)
+        current_user_id = str(current_user.id)
+        return notification_service.update_by_user(
+            notification_id, current_user_id, update_notification
         )
     except NotificationNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except DatabaseConnectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 @router.delete("/{notification_id}", status_code=status.HTTP_204_NO_CONTENT)
