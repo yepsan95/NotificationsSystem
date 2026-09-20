@@ -10,6 +10,8 @@ class UserResponse(BaseResponse):
     middle_name: str | None = None
     last_name: str
     email: EmailStr
+    phone_number: str | None = None
+    device_token: str | None = None
 
 
 class UserCreate(BaseModel):
@@ -21,6 +23,8 @@ class UserCreate(BaseModel):
     middle_name: str | None = None
     last_name: str
     email: EmailStr
+    phone_number: str | None = None
+    device_token: str | None = None
     password: str = Field(..., min_length=6, max_length=16)
 
 
@@ -33,4 +37,6 @@ class UserUpdate(BaseModel):
     middle_name: str | None = None
     last_name: str | None = None
     email: EmailStr | None = None
+    phone_number: str | None = None
+    device_token: str | None = None
     password: str | None = Field(default=None, min_length=6, max_length=16)
