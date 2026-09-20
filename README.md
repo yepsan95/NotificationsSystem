@@ -9,9 +9,18 @@ Allows each user to manage and send notifications through different channels.
 - Replace User
 - Update User
 - Delete User
+- Create new Notification
+- Get Notifications list
+- Get Notification by id
+- Delete Notification
+- Log User In
+- Refresh User Session
+- Log User Out
 
 ## Tables
 - users
+- notifications
+- refresh_tokens
 
 ## Author
 Bryan Yep Valencia
@@ -37,6 +46,11 @@ Bryan Yep Valencia
 ## Routes
 - /api/v1/users
 - /api/v1/users/{user_id}
+- /api/v1/notifications
+- /api/v1/notifications/{notification_id}
+- /api/v1/auth/login
+- /api/v1/auth/refresh
+- /api/v1/auth/logout
 
 ## Pre-requisites
 ### For Running The App
