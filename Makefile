@@ -15,6 +15,11 @@ COUNT ?= 50
 db-seed-users:
 	docker exec notifications-system-api python -m src.cli.seed_manager users --count $(COUNT)
 
+# Run notifications seeder
+COUNT ?= 50
+db-seed-notifications:
+	docker exec notifications-system-api python -m src.cli.seed_manager notifications --count $(COUNT)
+
 # Run tests
 run-tests:
 	docker exec notifications-system-api pytest -v /code/tests/e2e

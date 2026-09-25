@@ -4,6 +4,7 @@ import typer
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.real_database import get_db
+from src.database.seeders.notification_seeder import run_notification_seeder
 from src.database.seeders.user_seeder import run_user_seeder
 
 app = typer.Typer(
@@ -35,6 +36,34 @@ def seed_users(
     finally:
         try:
             # Terminate generator lifespan
+            next(db_generator)
+        except StopIteration:
+            pass
+
+
+@app.command(name="notifications")
+def seed_notifications(
+    count: int = typer.Option(
+        50, "--count", "-c", help="Number of notifications to seed."
+    ),
+) -> None:
+    """
+    Seed notifications table with mock data.
+    """
+
+    typer.echo("[SEEDER] Starting database for notifications seeder.")
+
+    db_generator = get_db()
+    db = next(db_generator)
+    try:
+        run_notification_seeder(db=db, count=count)
+    except SQLAlchemyError as e:
+        typer.echo(
+            f"[SEEDER] Error while trying to seed notifications: {e}", file=sys.stderr
+        )
+        raise typer.Exit(code=1)
+    finally:
+        try:
             next(db_generator)
         except StopIteration:
             pass

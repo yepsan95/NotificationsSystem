@@ -116,10 +116,17 @@ make db-migrate-test
 ```
 
 ### Seed Database
+- Seed users:
 > **_COUNT:_** The amount of users to generate
 ```
 make db-seed-users COUNT=50
 ```
+- Seed notifications:
+> **_COUNT:_** The amount of notifications to generate
+```
+make db-seed-notifications COUNT=50
+```
+
 ### Generate New Migration
 > **_name:_** The new migration name
 ```
